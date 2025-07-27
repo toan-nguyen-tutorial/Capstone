@@ -1,0 +1,3566 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Realtime Chart</title>
+    <!-- Thư viện Chart.js để vẽ biểu đồ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Socket.IO client -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!--Gauge Chart-->
+    <script type="text/javascript" src="/js/d3.js"></script>
+    <script type="text/javascript" src="/js/gauge.js"></script>
+    <style>
+      /* CSS cho gauge chart */
+      #gaugeContainer {
+        background: linear-gradient(135deg, #1e2f3d 0%, #2a5298 100%);
+        border-radius: 5px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      #leadindicatorGaugeContainer {
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      }
+
+      #gaugeInfo .card {
+        background: linear-gradient(
+          135deg,
+          #2c3e50 0%,
+          #34495e 100%
+        ) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-select-sm {
+        font-size: 0.875rem;
+      }
+      #motorChart {
+        min-height: 600px;
+        min-width: 100%;
+      }
+      #valveChart {
+        min-height: 600px;
+        min-width: 100%;
+      }
+      #damperChart {
+        min-height: 600px;
+        min-width: 100%;
+      }
+      #chillerChart {
+        min-height: 600px;
+        min-width: 100%;
+      }
+      #boilerChart {
+        min-height: 600px;
+        min-width: 100%;
+      }
+      /* Animation cho status */
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .text-danger {
+        animation: pulse 2s infinite;
+      }
+
+      /* CSS cho valve và damper gauge */
+      #valveGaugeContainer,
+      #damperGaugeContainer {
+        background: linear-gradient(135deg, #1e2f3d 0%, #2a5298 100%);
+        border-radius: 5px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      #valveGaugeContainer span,
+      #damperGaugeContainer span {
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      }
+    </style>
+    <!-- Bootstrap CSS cho styling -->
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <!-- Include navbar từ partial -->
+    <%- include('partials/navbar') %>
+
+    <div class="container-fluid">
+      <!-- Motor Section -->
+      <div class="row mb-3">
+        <div class="col-9">
+          <div class="row border">
+            <div class="col-2 border" style="background-color: #1e2f3d">
+              <div class="sidebar" style="color: #e0e0e0">
+                <i class="bi bi-gear me-1"></i> Setting
+                <div>
+                  <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Period</span>
+                    <select
+                      id="motorUpdatePeriod"
+                      class="form-select border-primary ms-3"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <option value="1" selected>1</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Remaining</span>
+                    <div
+                      class="form-control form-control-sm w-auto border-primary ms-auto"
+                      id="motorTimeRemaining"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      0
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                  <span>Time Buffer</span><br />
+                  <select
+                    id="motorDuration"
+                    class="form-select w-100 border-primary"
+                    style="height: 40px; line-height: 20px"
+                  >
+                    <option value="1">1 minutes</option>
+                    <option value="5">5 minutes</option>
+                  </select>
+                </div>
+                <div class="mt-2">
+                  <span>Motor</span><br />
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-outline-primary btn-sm w-100 dropdown-toggle text-white"
+                      type="button"
+                      id="motorDropdownBtn"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <i></i> Select
+                    </button>
+                    <ul
+                      class="dropdown-menu"
+                      id="motorDropdownContent"
+                      style="max-height: 200px; overflow-y: auto"
+                    >
+                      <!-- Checkboxes sẽ được render động ở đây -->
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ motor -->
+                <canvas id="motorChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-3 border">
+          <div class="text-white">
+            <div class="text-center mb-3" style="color: #2a5298">
+              <h5 class="mb-2">
+                <i class="bi bi-speedometer2 me-2"></i>Motor Gauge
+              </h5>
+              <div class="mb-3">
+                <select
+                  id="gaugeMotorSelect"
+                  class="form-select form-select-sm border-primary"
+                  style="height: 40px; line-height: 20px"
+                >
+                  <option value="">Choose motor...</option>
+                </select>
+              </div>
+            </div>
+            <div class="text-center">
+              <div
+                id="gaugeContainer"
+                class="d-flex justify-content-center align-items-center"
+                style="min-height: 300px"
+              >
+                <span id="leadindicatorGaugeContainer"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Valve Section -->
+      <div class="row mb-3">
+        <div class="col-9">
+          <div class="row border">
+            <div class="col-2 border" style="background-color: #1e2f3d">
+              <div class="sidebar" style="color: #e0e0e0">
+                <i class="bi bi-droplet-half me-1"></i> Setting
+                <div>
+                  <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Period</span>
+                    <select
+                      id="valveUpdatePeriod"
+                      class="form-select border-primary ms-3"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <option value="1" selected>1</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Remaining</span>
+                    <div
+                      class="form-control form-control-sm w-auto border-primary ms-auto"
+                      id="valveTimeRemaining"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      0
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                  <span>Time Buffer</span><br />
+                  <select
+                    id="valveDuration"
+                    class="form-select w-100 border-primary"
+                    style="height: 40px; line-height: 20px"
+                  >
+                    <option value="1">1 minutes</option>
+                    <option value="5">5 minutes</option>
+                  </select>
+                </div>
+                <div class="mt-2">
+                  <span>Valve</span><br />
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-outline-success btn-sm w-100 dropdown-toggle text-white"
+                      type="button"
+                      id="valveDropdownBtn"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <i></i> Select
+                    </button>
+                    <ul
+                      class="dropdown-menu"
+                      id="valveDropdownContent"
+                      style="max-height: 200px; overflow-y: auto"
+                    >
+                      <!-- Checkboxes sẽ được render động ở đây -->
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ valve -->
+                <canvas id="valveChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-3 border">
+          <div class="text-white">
+            <div class="text-center mb-3" style="color: #2a5298">
+              <h5 class="mb-2">
+                <i class="bi bi-droplet-half me-2"></i>Valve Gauge
+              </h5>
+              <div class="mb-3">
+                <select
+                  id="gaugeValveSelect"
+                  class="form-select form-select-sm border-primary"
+                  style="height: 40px; line-height: 20px"
+                >
+                  <option value="">Choose valve...</option>
+                </select>
+              </div>
+            </div>
+            <div class="text-center">
+              <div
+                id="valveGaugeContainer"
+                class="d-flex justify-content-center align-items-center"
+                style="min-height: 300px"
+              >
+                <span id="valveGaugeContainerSpan"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Damper Section -->
+      <div class="row mb-3">
+        <div class="col-9">
+          <div class="row border">
+            <div class="col-2 border" style="background-color: #1e2f3d">
+              <div class="sidebar" style="color: #e0e0e0">
+                <i class="bi bi-wind me-1"></i> Setting
+                <div>
+                  <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Period</span>
+                    <select
+                      id="damperUpdatePeriod"
+                      class="form-select border-primary ms-3"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <option value="1" selected>1</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Remaining</span>
+                    <div
+                      class="form-control form-control-sm w-auto border-primary ms-auto"
+                      id="damperTimeRemaining"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      0
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                  <span>Time Buffer</span><br />
+                  <select
+                    id="damperDuration"
+                    class="form-select w-100 border-primary"
+                    style="height: 40px; line-height: 20px"
+                  >
+                    <option value="1">1 minutes</option>
+                    <option value="5">5 minutes</option>
+                  </select>
+                </div>
+                <div class="mt-2">
+                  <span>Damper</span><br />
+                  <div class="dropdown">
+                    <button
+                      class="btn btn-outline-info btn-sm w-100 dropdown-toggle text-white"
+                      type="button"
+                      id="damperDropdownBtn"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <i></i> Select
+                    </button>
+                    <ul
+                      class="dropdown-menu"
+                      id="damperDropdownContent"
+                      style="max-height: 200px; overflow-y: auto"
+                    >
+                      <!-- Checkboxes sẽ được render động ở đây -->
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ damper -->
+                <canvas id="damperChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-3 border">
+          <div class="text-white">
+            <div class="text-center mb-3" style="color: #2a5298">
+              <h5 class="mb-2"><i class="bi bi-wind me-2"></i>Damper Gauge</h5>
+              <div class="mb-3">
+                <select
+                  id="gaugeDamperSelect"
+                  class="form-select form-select-sm border-primary"
+                  style="height: 40px; line-height: 20px"
+                >
+                  <option value="">Choose damper...</option>
+                </select>
+              </div>
+            </div>
+            <div class="text-center">
+              <div
+                id="damperGaugeContainer"
+                class="d-flex justify-content-center align-items-center"
+                style="min-height: 300px"
+              >
+                <span id="damperGaugeContainerSpan"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chiller Temperature Section -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="row border">
+            <div class="col-2 border" style="background-color: #1e2f3d">
+              <div class="sidebar" style="color: #e0e0e0">
+                <i class="bi bi-thermometer-half me-1"></i> Setting
+                <div>
+                  <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Period</span>
+                    <select
+                      id="chillerUpdatePeriod"
+                      class="form-select border-primary ms-3"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <option value="1" selected>1</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Remaining</span>
+                    <div
+                      class="form-control form-control-sm w-auto border-primary ms-auto"
+                      id="chillerTimeRemaining"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      0
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                  <span>Time Buffer</span><br />
+                  <select
+                    id="chillerDuration"
+                    class="form-select w-100 border-primary"
+                    style="height: 40px; line-height: 20px"
+                  >
+                    <option value="1">1 minutes</option>
+                    <option value="5">5 minutes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ chiller temperature -->
+                <canvas id="chillerChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boiler Temperature Section -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="row border">
+            <div class="col-2 border" style="background-color: #1e2f3d">
+              <div class="sidebar" style="color: #e0e0e0">
+                <i class="bi bi-fire me-1"></i> Setting
+                <div>
+                  <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Period</span>
+                    <select
+                      id="boilerUpdatePeriod"
+                      class="form-select border-primary ms-3"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      <option value="1" selected>1</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="mt-2 d-flex align-items-center mb-2">
+                    <span class="fs-6">Remaining</span>
+                    <div
+                      class="form-control form-control-sm w-auto border-primary ms-auto"
+                      id="boilerTimeRemaining"
+                      style="height: 40px; line-height: 20px"
+                    >
+                      0
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                  <span>Time Buffer</span><br />
+                  <select
+                    id="boilerDuration"
+                    class="form-select w-100 border-primary"
+                    style="height: 40px; line-height: 20px"
+                  >
+                    <option value="1">1 minutes</option>
+                    <option value="5">5 minutes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ boiler temperature -->
+                <canvas id="boilerChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reset Settings Button -->
+      <div class="row mb-2">
+        <div class="col-12 text-end">
+          <button
+            id="resetSettingsBtn"
+            class="btn btn-outline-secondary btn-sm"
+            title="Reset all settings to default"
+          >
+            <i class="bi bi-arrow-clockwise"></i> Reset Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Khởi tạo Socket.IO connection
+      const socket = io();
+
+      // Danh sách motor, valve, damper động
+      let allMotors = [];
+      let allValves = [];
+      let allDampers = [];
+
+      // Dữ liệu cho chiller và boiler
+      let chillerData = { chillerTempOut: 0, coolingTowerTempOut: 0 };
+      let boilerData = { boilerTempOut: 0, heatExchangerTempOut: 0 };
+
+      // Hàm lưu trạng thái checkbox vào localStorage
+      function saveCheckboxState(type, deviceList) {
+        const checkboxes = document.querySelectorAll(`input.${type}-checkbox`);
+        const selectedDevices = [];
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            selectedDevices.push(checkbox.value);
+          }
+        });
+        localStorage.setItem(
+          `${type}SelectedDevices`,
+          JSON.stringify(selectedDevices)
+        );
+      }
+
+      // Hàm lấy trạng thái checkbox từ localStorage
+      function getCheckboxState(type) {
+        const saved = localStorage.getItem(`${type}SelectedDevices`);
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      // Hàm kiểm tra xem device có được chọn trước đó không
+      function isDeviceSelected(type, deviceName) {
+        const selectedDevices = getCheckboxState(type);
+        return selectedDevices.includes(deviceName);
+      }
+
+      // Hàm render checkbox motor động
+      function renderMotorCheckboxes(motorList) {
+        const dropdownContent = document.getElementById("motorDropdownContent");
+        let html = "";
+        motorList.forEach((motor, idx) => {
+          const isSelected =
+            isDeviceSelected("motor", motor) ||
+            (idx < 2 && getCheckboxState("motor").length === 0);
+          html += `<li><a class="dropdown-item" href="#">
+            <div class="form-check">
+              <input class="form-check-input motor-checkbox" type="checkbox" id="motor${idx}" value="${motor}" ${
+            isSelected ? "checked" : ""
+          }>
+              <label class="form-check-label" for="motor${idx}">${motor}</label>
+            </div>
+          </a></li>`;
+        });
+        dropdownContent.innerHTML = html;
+      }
+
+      // Hàm render checkbox valve động
+      function renderValveCheckboxes(valveList) {
+        const dropdownContent = document.getElementById("valveDropdownContent");
+        let html = "";
+        valveList.forEach((valve, idx) => {
+          const isSelected =
+            isDeviceSelected("valve", valve) ||
+            (idx < 2 && getCheckboxState("valve").length === 0);
+          html += `<li><a class="dropdown-item" href="#">
+            <div class="form-check">
+              <input class="form-check-input valve-checkbox" type="checkbox" id="valve${idx}" value="${valve}" ${
+            isSelected ? "checked" : ""
+          }>
+              <label class="form-check-label" for="valve${idx}">${valve}</label>
+            </div>
+          </a></li>`;
+        });
+        dropdownContent.innerHTML = html;
+      }
+
+      // Hàm render checkbox damper động
+      function renderDamperCheckboxes(damperList) {
+        const dropdownContent = document.getElementById(
+          "damperDropdownContent"
+        );
+        let html = "";
+        damperList.forEach((damper, idx) => {
+          const isSelected =
+            isDeviceSelected("damper", damper) ||
+            (idx < 2 && getCheckboxState("damper").length === 0);
+          html += `<li><a class="dropdown-item" href="#">
+            <div class="form-check">
+              <input class="form-check-input damper-checkbox" type="checkbox" id="damper${idx}" value="${damper}" ${
+            isSelected ? "checked" : ""
+          }>
+              <label class="form-check-label" for="damper${idx}">${damper}</label>
+            </div>
+          </a></li>`;
+        });
+        dropdownContent.innerHTML = html;
+      }
+
+      // Hàm lấy danh sách motor được chọn
+      function getSelectedMotors() {
+        const checkboxes = document.querySelectorAll("input.motor-checkbox");
+        const selectedMotors = [];
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            selectedMotors.push(checkbox.value);
+          }
+        });
+        return selectedMotors;
+      }
+
+      // Hàm lấy danh sách valve được chọn
+      function getSelectedValves() {
+        const checkboxes = document.querySelectorAll("input.valve-checkbox");
+        const selectedValves = [];
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            selectedValves.push(checkbox.value);
+          }
+        });
+        return selectedValves;
+      }
+
+      // Hàm lấy danh sách damper được chọn
+      function getSelectedDampers() {
+        const checkboxes = document.querySelectorAll("input.damper-checkbox");
+        const selectedDampers = [];
+        checkboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            selectedDampers.push(checkbox.value);
+          }
+        });
+        return selectedDampers;
+      }
+
+      // Khởi tạo Chart.js cho Motor
+      const motorCtx = document.getElementById("motorChart").getContext("2d");
+      const motorChart = new Chart(motorCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [],
+        },
+        options: {
+          animation: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: { size: 14 },
+                autoSkip: false,
+                maxTicksLimit: 10,
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(
+                    document.getElementById("motorUpdatePeriod").value
+                  );
+                  const duration = parseInt(
+                    document.getElementById("motorDuration").value
+                  );
+
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    if (duration == 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  }
+                  return label;
+                },
+              },
+              grid: { display: false },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Motor Speed (rpm)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                font: { weight: "regular" },
+                stepSize: 10,
+              },
+              beginAtZero: false,
+              min: 0,
+              max: 1000,
+            },
+          },
+          plugins: {
+            legend: { position: "top" },
+            title: {
+              display: true,
+              text: "Motor Chart",
+              font: { size: 24 },
+            },
+          },
+        },
+        plugins: [
+          {
+            id: "motorCustomTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(
+                  document.getElementById("motorUpdatePeriod").value
+                );
+                let isMajor = false;
+                const duration = parseInt(
+                  document.getElementById("motorDuration").value
+                );
+
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Khởi tạo Chart.js cho Valve
+      const valveCtx = document.getElementById("valveChart").getContext("2d");
+      const valveChart = new Chart(valveCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [],
+        },
+        options: {
+          animation: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: { size: 14 },
+                autoSkip: false,
+                maxTicksLimit: 10,
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(
+                    document.getElementById("valveUpdatePeriod").value
+                  );
+                  const duration = parseInt(
+                    document.getElementById("valveDuration").value
+                  );
+
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    if (duration == 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  }
+                  return label;
+                },
+              },
+              grid: { display: false },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Valve Position (%)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                font: { weight: "regular" },
+                stepSize: 10,
+              },
+              beginAtZero: false,
+              min: 0,
+              max: 100,
+            },
+          },
+          plugins: {
+            legend: { position: "top" },
+            title: {
+              display: true,
+              text: "Valve Chart",
+              font: { size: 24 },
+            },
+          },
+        },
+        plugins: [
+          {
+            id: "valveCustomTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(
+                  document.getElementById("valveUpdatePeriod").value
+                );
+                let isMajor = false;
+                const duration = parseInt(
+                  document.getElementById("valveDuration").value
+                );
+
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Khởi tạo Chart.js cho Damper
+      const damperCtx = document.getElementById("damperChart").getContext("2d");
+      const damperChart = new Chart(damperCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [],
+        },
+        options: {
+          animation: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: { size: 14 },
+                autoSkip: false,
+                maxTicksLimit: 10,
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(
+                    document.getElementById("damperUpdatePeriod").value
+                  );
+                  const duration = parseInt(
+                    document.getElementById("damperDuration").value
+                  );
+
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    if (duration == 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  }
+                  return label;
+                },
+              },
+              grid: { display: false },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Damper Position (%)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                font: { weight: "regular" },
+                stepSize: 10,
+              },
+              beginAtZero: false,
+              min: 0,
+              max: 100,
+            },
+          },
+          plugins: {
+            legend: { position: "top" },
+            title: {
+              display: true,
+              text: "Damper Chart",
+              font: { size: 24 },
+            },
+          },
+        },
+        plugins: [
+          {
+            id: "damperCustomTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(
+                  document.getElementById("damperUpdatePeriod").value
+                );
+                let isMajor = false;
+                const duration = parseInt(
+                  document.getElementById("damperDuration").value
+                );
+
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Khởi tạo Chart.js cho Chiller Temperature
+      const chillerCtx = document
+        .getElementById("chillerChart")
+        .getContext("2d");
+      const chillerChart = new Chart(chillerCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Chiller Temp Out",
+              data: [],
+              borderColor: "#dc3545",
+              backgroundColor: "#dc354533",
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0,
+              borderWidth: 2,
+            },
+            {
+              label: "Cooling Tower Temp Out",
+              data: [],
+              borderColor: "#17a2b8",
+              backgroundColor: "#17a2b833",
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0,
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          animation: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: { size: 14 },
+                autoSkip: false,
+                maxTicksLimit: 10,
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(
+                    document.getElementById("chillerUpdatePeriod").value
+                  );
+                  const duration = parseInt(
+                    document.getElementById("chillerDuration").value
+                  );
+
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    if (duration == 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  }
+                  return label;
+                },
+              },
+              grid: { display: false },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Temperature (°C)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                font: { weight: "regular" },
+                stepSize: 5,
+              },
+              beginAtZero: false,
+              min: 0,
+              max: 50,
+            },
+          },
+          plugins: {
+            legend: { position: "top" },
+            title: {
+              display: true,
+              text: "Chiller Temperature Chart",
+              font: { size: 24 },
+            },
+          },
+        },
+        plugins: [
+          {
+            id: "chillerCustomTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(
+                  document.getElementById("chillerUpdatePeriod").value
+                );
+                let isMajor = false;
+                const duration = parseInt(
+                  document.getElementById("chillerDuration").value
+                );
+
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Khởi tạo Chart.js cho Boiler Temperature
+      const boilerCtx = document.getElementById("boilerChart").getContext("2d");
+      const boilerChart = new Chart(boilerCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Boiler Temp Out",
+              data: [],
+              borderColor: "#fd7e14",
+              backgroundColor: "#fd7e1433",
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0,
+              borderWidth: 2,
+            },
+            {
+              label: "Heat Exchanger Temp Out",
+              data: [],
+              borderColor: "#6f42c1",
+              backgroundColor: "#6f42c133",
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0,
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          animation: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: { size: 14 },
+                autoSkip: false,
+                maxTicksLimit: 10,
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(
+                    document.getElementById("boilerUpdatePeriod").value
+                  );
+                  const duration = parseInt(
+                    document.getElementById("boilerDuration").value
+                  );
+
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    if (duration == 1) {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else {
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" "))
+                          seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  }
+                  return label;
+                },
+              },
+              grid: { display: false },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Temperature (°C)",
+                font: { weight: "bold" },
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                font: { weight: "regular" },
+                stepSize: 10,
+              },
+              beginAtZero: false,
+              min: 0,
+              max: 100,
+            },
+          },
+          plugins: {
+            legend: { position: "top" },
+            title: {
+              display: true,
+              text: "Boiler Temperature Chart",
+              font: { size: 24 },
+            },
+          },
+        },
+        plugins: [
+          {
+            id: "boilerCustomTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(
+                  document.getElementById("boilerUpdatePeriod").value
+                );
+                let isMajor = false;
+                const duration = parseInt(
+                  document.getElementById("boilerDuration").value
+                );
+
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6);
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Buffer dữ liệu cho Motor
+      let motorSampleSize = 60;
+      let motorTimeStamps = [];
+      let motorDataSeries = {};
+
+      // Buffer dữ liệu cho Valve
+      let valveSampleSize = 60;
+      let valveTimeStamps = [];
+      let valveDataSeries = {};
+
+      // Buffer dữ liệu cho Damper
+      let damperSampleSize = 60;
+      let damperTimeStamps = [];
+      let damperDataSeries = {};
+
+      // Buffer dữ liệu cho Chiller
+      let chillerSampleSize = 60;
+      let chillerTimeStamps = [];
+      let chillerTempOutData = [];
+      let coolingTowerTempOutData = [];
+
+      // Buffer dữ liệu cho Boiler
+      let boilerSampleSize = 60;
+      let boilerTimeStamps = [];
+      let boilerTempOutData = [];
+      let heatExchangerTempOutData = [];
+
+      // Lưu trữ dữ liệu mới nhất từ socket
+      let latestSocketData = {};
+
+      // Hàm khởi tạo dataSeries và latestSocketData động cho Motor
+      function initializeMotorDataStructures(motorList) {
+        motorDataSeries = {};
+        motorList.forEach((motor) => {
+          motorDataSeries[motor] = [];
+          if (!latestSocketData[motor]) {
+            latestSocketData[motor] = { Speed: 0, timestamp: null };
+          }
+        });
+      }
+
+      // Hàm khởi tạo dataSeries và latestSocketData động cho Valve
+      function initializeValveDataStructures(valveList) {
+        valveDataSeries = {};
+        valveList.forEach((valve) => {
+          valveDataSeries[valve] = [];
+          if (!latestSocketData[valve]) {
+            latestSocketData[valve] = { ValvePosition: 0, timestamp: null };
+          }
+        });
+      }
+
+      // Hàm khởi tạo dataSeries và latestSocketData động cho Damper
+      function initializeDamperDataStructures(damperList) {
+        damperDataSeries = {};
+        damperList.forEach((damper) => {
+          damperDataSeries[damper] = [];
+          if (!latestSocketData[damper]) {
+            latestSocketData[damper] = { DamperPosition: 0, timestamp: null };
+          }
+        });
+      }
+
+      // Lấy các element DOM để thao tác cho Motor
+      const motorDurationSelect = document.getElementById("motorDuration");
+      const motorUpdatePeriodSelect =
+        document.getElementById("motorUpdatePeriod");
+      const motorTimeRemaining = document.getElementById("motorTimeRemaining");
+
+      // Lấy các element DOM để thao tác cho Valve
+      const valveDurationSelect = document.getElementById("valveDuration");
+      const valveUpdatePeriodSelect =
+        document.getElementById("valveUpdatePeriod");
+      const valveTimeRemaining = document.getElementById("valveTimeRemaining");
+
+      // Lấy các element DOM để thao tác cho Damper
+      const damperDurationSelect = document.getElementById("damperDuration");
+      const damperUpdatePeriodSelect =
+        document.getElementById("damperUpdatePeriod");
+      const damperTimeRemaining = document.getElementById(
+        "damperTimeRemaining"
+      );
+
+      // Lấy các element DOM để thao tác cho Chiller
+      const chillerDurationSelect = document.getElementById("chillerDuration");
+      const chillerUpdatePeriodSelect = document.getElementById(
+        "chillerUpdatePeriod"
+      );
+      const chillerTimeRemaining = document.getElementById(
+        "chillerTimeRemaining"
+      );
+
+      // Lấy các element DOM để thao tác cho Boiler
+      const boilerDurationSelect = document.getElementById("boilerDuration");
+      const boilerUpdatePeriodSelect =
+        document.getElementById("boilerUpdatePeriod");
+      const boilerTimeRemaining = document.getElementById(
+        "boilerTimeRemaining"
+      );
+
+      // Hàm lấy dữ liệu lịch sử từ API cho Motor
+      async function fetchMotorHistoricalData(minutes, motor) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/motor-speed/${minutes}?motors=${motor}`
+          );
+          const data = await response.json();
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            speed: item.speed,
+          }));
+        } catch (error) {
+          console.error("Error fetching motor historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm lấy dữ liệu lịch sử từ API cho Valve
+      async function fetchValveHistoricalData(minutes, valve) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/valve-position/${minutes}?valves=${valve}`
+          );
+          const data = await response.json();
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            position: item.valvePosition,
+          }));
+        } catch (error) {
+          console.error("Error fetching valve historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm lấy dữ liệu lịch sử từ API cho Damper
+      async function fetchDamperHistoricalData(minutes, damper) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/damper-position/${minutes}?dampers=${damper}`
+          );
+          const data = await response.json();
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            position: item.damperPosition,
+          }));
+        } catch (error) {
+          console.error("Error fetching damper historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm lấy dữ liệu lịch sử từ API cho Chiller
+      async function fetchChillerHistoricalData(minutes) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/chiller-temp/${minutes}`
+          );
+          const data = await response.json();
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            chillerTempOut: item.chillerTempOut,
+            coolingTowerTempOut: item.coolingTowerTempOut,
+          }));
+        } catch (error) {
+          console.error("Error fetching chiller historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm lấy dữ liệu lịch sử từ API cho Boiler
+      async function fetchBoilerHistoricalData(minutes) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/boiler-temp/${minutes}`
+          );
+          const data = await response.json();
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            boilerTempOut: item.boilerTempOut,
+            heatExchangerTempOut: item.heatExchangerTempOut,
+          }));
+        } catch (error) {
+          console.error("Error fetching boiler historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm tạo mảng thời gian đều đặn theo update period
+      function generateTimeSeries(start, end, updatePeriod) {
+        const result = [];
+        let current = new Date(start);
+
+        // Điều chỉnh thời gian bắt đầu để phù hợp với update period
+        const currentSeconds = current.getSeconds();
+        const adjustedSeconds =
+          Math.floor(currentSeconds / updatePeriod) * updatePeriod;
+        current.setSeconds(adjustedSeconds, 0, 0); // Reset về giây 0, millisecond 0
+
+        while (current <= end) {
+          result.push(current.toLocaleTimeString("vi-VN"));
+          current = new Date(current.getTime() + updatePeriod * 1000);
+        }
+        return result;
+      }
+
+      // Hàm lấp giá trị trung bình vào các điểm thiếu
+      function fillMissingData(timeSeries, data, field = "speed") {
+        const valueMap = {};
+        // Tạo map từ timestamp sang value để tìm kiếm nhanh
+        data.forEach((item) => (valueMap[item.timestamp] = item[field]));
+        const filled = [];
+
+        for (let i = 0; i < timeSeries.length; i++) {
+          const t = timeSeries[i];
+          if (valueMap[t] !== undefined) {
+            // Nếu có dữ liệu, sử dụng trực tiếp
+            filled.push(valueMap[t]);
+          } else {
+            // Nếu không có dữ liệu, tìm giá trị trước và sau để nội suy
+            let prev = null,
+              next = null;
+            // Tìm giá trị trước đó
+            for (let j = i - 1; j >= 0; j--) {
+              if (valueMap[timeSeries[j]] !== undefined) {
+                prev = valueMap[timeSeries[j]];
+                break;
+              }
+            }
+            // Tìm giá trị sau đó
+            for (let j = i + 1; j < timeSeries.length; j++) {
+              if (valueMap[timeSeries[j]] !== undefined) {
+                next = valueMap[timeSeries[j]];
+                break;
+              }
+            }
+            // Tính trung bình nếu có cả 2, còn không thì lấy giá trị gần nhất
+            if (prev !== null && next !== null) {
+              filled.push((prev + next) / 2); // Nội suy tuyến tính
+            } else if (prev !== null) {
+              filled.push(prev); // Lấy giá trị trước
+            } else if (next !== null) {
+              filled.push(next); // Lấy giá trị sau
+            } else {
+              filled.push(null); // Không có dữ liệu
+            }
+          }
+        }
+        return filled;
+      }
+
+      // Hàm tạo datasets động cho Chart.js - Motor
+      function createMotorDatasets(motorList) {
+        const colorList = [
+          "#FF0000",
+          "#00CC00",
+          "#0000FF",
+          "#FF00FF",
+          "#FFA500",
+          "#00CED1",
+          "#FFD700",
+          "#8A2BE2",
+          "#FF6347",
+          "#008B8B",
+          "#DC143C",
+          "#20B2AA",
+          "#FF1493",
+          "#7FFF00",
+          "#1E90FF",
+          "#B22222",
+          "#00FF7F",
+          "#4682B4",
+          "#A0522D",
+          "#C71585",
+        ];
+        return motorList.map((motor, idx) => ({
+          label: motor,
+          data: [],
+          borderColor: colorList[idx % colorList.length],
+          backgroundColor: colorList[idx % colorList.length] + "33",
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1,
+        }));
+      }
+
+      // Hàm tạo datasets động cho Chart.js - Valve
+      function createValveDatasets(valveList) {
+        const colorList = [
+          "#28a745",
+          "#20c997",
+          "#17a2b8",
+          "#6f42c1",
+          "#fd7e14",
+          "#e83e8c",
+          "#6c757d",
+          "#343a40",
+          "#007bff",
+          "#6610f2",
+        ];
+        return valveList.map((valve, idx) => ({
+          label: valve,
+          data: [],
+          borderColor: colorList[idx % colorList.length],
+          backgroundColor: colorList[idx % colorList.length] + "33",
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1,
+        }));
+      }
+
+      // Hàm tạo datasets động cho Chart.js - Damper
+      function createDamperDatasets(damperList) {
+        const colorList = [
+          "#17a2b8",
+          "#6f42c1",
+          "#fd7e14",
+          "#e83e8c",
+          "#6c757d",
+          "#343a40",
+          "#007bff",
+          "#6610f2",
+          "#28a745",
+          "#20c997",
+        ];
+        return damperList.map((damper, idx) => ({
+          label: damper,
+          data: [],
+          borderColor: colorList[idx % colorList.length],
+          backgroundColor: colorList[idx % colorList.length] + "33",
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1,
+        }));
+      }
+
+      // Sửa lại initializeMotorChart để fetch lịch sử cho các motor động
+      async function initializeMotorChart() {
+        const minutes = parseInt(motorDurationSelect.value);
+        const updatePeriod = parseInt(motorUpdatePeriodSelect.value);
+        motorSampleSize = minutes * 60;
+        const selectedMotors = getSelectedMotors();
+
+        // Xóa dữ liệu cũ hoàn toàn
+        motorTimeStamps = [];
+        selectedMotors.forEach((motor) => {
+          if (motorDataSeries[motor]) {
+            motorDataSeries[motor] = [];
+          }
+        });
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(endTime.getTime() - motorSampleSize * 1000);
+        motorTimeStamps = generateTimeSeries(startTime, endTime, updatePeriod);
+
+        // Lấy dữ liệu lịch sử cho tất cả motor được chọn
+        for (const motor of selectedMotors) {
+          const data = await fetchMotorHistoricalData(minutes, motor);
+          motorDataSeries[motor] = fillMissingData(
+            motorTimeStamps,
+            data,
+            "speed"
+          );
+        }
+
+        // Đảm bảo đồng bộ số lượng điểm
+        motorChart.data.labels = motorTimeStamps;
+        // Tạo lại datasets động cho các motor được chọn
+        motorChart.data.datasets = createMotorDatasets(selectedMotors).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: motorDataSeries[dataset.label]
+              ? motorDataSeries[dataset.label].slice(0, motorTimeStamps.length)
+              : [],
+          })
+        );
+        motorChart.update();
+      }
+
+      // Sửa lại initializeValveChart để fetch lịch sử cho các valve động
+      async function initializeValveChart() {
+        const minutes = parseInt(valveDurationSelect.value);
+        const updatePeriod = parseInt(valveUpdatePeriodSelect.value);
+        valveSampleSize = minutes * 60;
+        const selectedValves = getSelectedValves();
+
+        // Xóa dữ liệu cũ hoàn toàn
+        valveTimeStamps = [];
+        selectedValves.forEach((valve) => {
+          if (valveDataSeries[valve]) {
+            valveDataSeries[valve] = [];
+          }
+        });
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(endTime.getTime() - valveSampleSize * 1000);
+        valveTimeStamps = generateTimeSeries(startTime, endTime, updatePeriod);
+
+        // Lấy dữ liệu lịch sử cho tất cả valve được chọn
+        for (const valve of selectedValves) {
+          const data = await fetchValveHistoricalData(minutes, valve);
+          valveDataSeries[valve] = fillMissingData(
+            valveTimeStamps,
+            data,
+            "position"
+          );
+        }
+
+        // Đảm bảo đồng bộ số lượng điểm
+        valveChart.data.labels = valveTimeStamps;
+        // Tạo lại datasets động cho các valve được chọn
+        valveChart.data.datasets = createValveDatasets(selectedValves).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: valveDataSeries[dataset.label]
+              ? valveDataSeries[dataset.label].slice(0, valveTimeStamps.length)
+              : [],
+          })
+        );
+        valveChart.update();
+      }
+
+      // Sửa lại initializeDamperChart để fetch lịch sử cho các damper động
+      async function initializeDamperChart() {
+        const minutes = parseInt(damperDurationSelect.value);
+        const updatePeriod = parseInt(damperUpdatePeriodSelect.value);
+        damperSampleSize = minutes * 60;
+        const selectedDampers = getSelectedDampers();
+
+        // Xóa dữ liệu cũ hoàn toàn
+        damperTimeStamps = [];
+        selectedDampers.forEach((damper) => {
+          if (damperDataSeries[damper]) {
+            damperDataSeries[damper] = [];
+          }
+        });
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(endTime.getTime() - damperSampleSize * 1000);
+        damperTimeStamps = generateTimeSeries(startTime, endTime, updatePeriod);
+
+        // Lấy dữ liệu lịch sử cho tất cả damper được chọn
+        for (const damper of selectedDampers) {
+          const data = await fetchDamperHistoricalData(minutes, damper);
+          damperDataSeries[damper] = fillMissingData(
+            damperTimeStamps,
+            data,
+            "position"
+          );
+        }
+
+        // Đảm bảo đồng bộ số lượng điểm
+        damperChart.data.labels = damperTimeStamps;
+        // Tạo lại datasets động cho các damper được chọn
+        damperChart.data.datasets = createDamperDatasets(selectedDampers).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: damperDataSeries[dataset.label]
+              ? damperDataSeries[dataset.label].slice(
+                  0,
+                  damperTimeStamps.length
+                )
+              : [],
+          })
+        );
+        damperChart.update();
+      }
+
+      // Cập nhật biểu đồ Chiller với dữ liệu từ socket
+      function updateChillerChartWithSocketData() {
+        const updatePeriod = parseInt(chillerUpdatePeriodSelect.value);
+        const minutes = parseInt(chillerDurationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        // Cập nhật dữ liệu Chiller Temp Out
+        if (chillerTempOutData.length >= sampleSize) {
+          chillerTempOutData.shift();
+        }
+        chillerTempOutData.push(chillerData.chillerTempOut);
+
+        // Cập nhật dữ liệu Cooling Tower Temp Out
+        if (coolingTowerTempOutData.length >= sampleSize) {
+          coolingTowerTempOutData.shift();
+        }
+        coolingTowerTempOutData.push(chillerData.coolingTowerTempOut);
+
+        if (chillerTimeStamps.length >= sampleSize) {
+          chillerTimeStamps.shift();
+        }
+        chillerTimeStamps.push(currentTime);
+
+        chillerChart.data.labels = chillerTimeStamps;
+        chillerChart.data.datasets[0].data = chillerTempOutData.slice(
+          0,
+          chillerTimeStamps.length
+        );
+        chillerChart.data.datasets[1].data = coolingTowerTempOutData.slice(
+          0,
+          chillerTimeStamps.length
+        );
+        chillerChart.update();
+      }
+
+      // Cập nhật biểu đồ Boiler với dữ liệu từ socket
+      function updateBoilerChartWithSocketData() {
+        const updatePeriod = parseInt(boilerUpdatePeriodSelect.value);
+        const minutes = parseInt(boilerDurationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        // Cập nhật dữ liệu Boiler Temp Out
+        if (boilerTempOutData.length >= sampleSize) {
+          boilerTempOutData.shift();
+        }
+        boilerTempOutData.push(boilerData.boilerTempOut);
+
+        // Cập nhật dữ liệu Heat Exchanger Temp Out
+        if (heatExchangerTempOutData.length >= sampleSize) {
+          heatExchangerTempOutData.shift();
+        }
+        heatExchangerTempOutData.push(boilerData.heatExchangerTempOut);
+
+        if (boilerTimeStamps.length >= sampleSize) {
+          boilerTimeStamps.shift();
+        }
+        boilerTimeStamps.push(currentTime);
+
+        boilerChart.data.labels = boilerTimeStamps;
+        boilerChart.data.datasets[0].data = boilerTempOutData.slice(
+          0,
+          boilerTimeStamps.length
+        );
+        boilerChart.data.datasets[1].data = heatExchangerTempOutData.slice(
+          0,
+          boilerTimeStamps.length
+        );
+        boilerChart.update();
+      }
+
+      // Sửa lại initializeChillerChart để fetch lịch sử
+      async function initializeChillerChart() {
+        const minutes = parseInt(chillerDurationSelect.value);
+        const updatePeriod = parseInt(chillerUpdatePeriodSelect.value);
+        chillerSampleSize = minutes * 60;
+
+        // Xóa dữ liệu cũ hoàn toàn
+        chillerTimeStamps = [];
+        chillerTempOutData = [];
+        coolingTowerTempOutData = [];
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(
+          endTime.getTime() - chillerSampleSize * 1000
+        );
+        chillerTimeStamps = generateTimeSeries(
+          startTime,
+          endTime,
+          updatePeriod
+        );
+
+        // Lấy dữ liệu lịch sử
+        const data = await fetchChillerHistoricalData(minutes);
+
+        // Tách dữ liệu cho từng dataset
+        const chillerTempMap = {};
+        const coolingTowerTempMap = {};
+        data.forEach((item) => {
+          chillerTempMap[item.timestamp] = item.chillerTempOut;
+          coolingTowerTempMap[item.timestamp] = item.coolingTowerTempOut;
+        });
+
+        // Lấp đầy dữ liệu cho từng dataset
+        chillerTempOutData = fillMissingData(
+          chillerTimeStamps,
+          data,
+          "chillerTempOut"
+        );
+        coolingTowerTempOutData = fillMissingData(
+          chillerTimeStamps,
+          data,
+          "coolingTowerTempOut"
+        );
+
+        // Cập nhật chart
+        chillerChart.data.labels = chillerTimeStamps;
+        chillerChart.data.datasets[0].data = chillerTempOutData.slice(
+          0,
+          chillerTimeStamps.length
+        );
+        chillerChart.data.datasets[1].data = coolingTowerTempOutData.slice(
+          0,
+          chillerTimeStamps.length
+        );
+        chillerChart.update();
+      }
+
+      // Sửa lại initializeBoilerChart để fetch lịch sử
+      async function initializeBoilerChart() {
+        const minutes = parseInt(boilerDurationSelect.value);
+        const updatePeriod = parseInt(boilerUpdatePeriodSelect.value);
+        boilerSampleSize = minutes * 60;
+
+        // Xóa dữ liệu cũ hoàn toàn
+        boilerTimeStamps = [];
+        boilerTempOutData = [];
+        heatExchangerTempOutData = [];
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(endTime.getTime() - boilerSampleSize * 1000);
+        boilerTimeStamps = generateTimeSeries(startTime, endTime, updatePeriod);
+
+        // Lấy dữ liệu lịch sử
+        const data = await fetchBoilerHistoricalData(minutes);
+
+        // Tách dữ liệu cho từng dataset
+        const boilerTempMap = {};
+        const heatExchangerTempMap = {};
+        data.forEach((item) => {
+          boilerTempMap[item.timestamp] = item.boilerTempOut;
+          heatExchangerTempMap[item.timestamp] = item.heatExchangerTempOut;
+        });
+
+        // Lấp đầy dữ liệu cho từng dataset
+        boilerTempOutData = fillMissingData(
+          boilerTimeStamps,
+          data,
+          "boilerTempOut"
+        );
+        heatExchangerTempOutData = fillMissingData(
+          boilerTimeStamps,
+          data,
+          "heatExchangerTempOut"
+        );
+
+        // Cập nhật chart
+        boilerChart.data.labels = boilerTimeStamps;
+        boilerChart.data.datasets[0].data = boilerTempOutData.slice(
+          0,
+          boilerTimeStamps.length
+        );
+        boilerChart.data.datasets[1].data = heatExchangerTempOutData.slice(
+          0,
+          boilerTimeStamps.length
+        );
+        boilerChart.update();
+      }
+
+      // Cập nhật biểu đồ Motor với dữ liệu từ socket
+      function updateMotorChartWithSocketData() {
+        const selectedMotors = getSelectedMotors();
+        const updatePeriod = parseInt(motorUpdatePeriodSelect.value);
+        const minutes = parseInt(motorDurationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        for (const selectedMotor of selectedMotors) {
+          let speedValue;
+          if (
+            latestSocketData[selectedMotor] &&
+            latestSocketData[selectedMotor].timestamp &&
+            (!lastSocketTimestamps[selectedMotor] ||
+              lastSocketTimestamps[selectedMotor] !==
+                latestSocketData[selectedMotor].timestamp)
+          ) {
+            speedValue = latestSocketData[selectedMotor].Speed;
+            lastSocketTimestamps[selectedMotor] =
+              latestSocketData[selectedMotor].timestamp;
+          } else {
+            // Nếu không có dữ liệu mới, giữ lại giá trị cuối cùng
+            speedValue =
+              motorDataSeries[selectedMotor] &&
+              motorDataSeries[selectedMotor].length > 0
+                ? motorDataSeries[selectedMotor][
+                    motorDataSeries[selectedMotor].length - 1
+                  ]
+                : 0;
+          }
+
+          if (!motorDataSeries[selectedMotor])
+            motorDataSeries[selectedMotor] = [];
+          if (motorDataSeries[selectedMotor].length >= sampleSize) {
+            motorDataSeries[selectedMotor].shift();
+          }
+          motorDataSeries[selectedMotor].push(speedValue);
+        }
+
+        if (motorTimeStamps.length >= sampleSize) {
+          motorTimeStamps.shift();
+        }
+        motorTimeStamps.push(currentTime);
+
+        motorChart.data.labels = motorTimeStamps;
+        // Tạo lại datasets động cho các motor được chọn
+        motorChart.data.datasets = createMotorDatasets(selectedMotors).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: motorDataSeries[dataset.label]
+              ? motorDataSeries[dataset.label].slice(0, motorTimeStamps.length)
+              : [],
+          })
+        );
+        motorChart.update();
+      }
+
+      // Cập nhật biểu đồ Valve với dữ liệu từ socket
+      function updateValveChartWithSocketData() {
+        const selectedValves = getSelectedValves();
+        const updatePeriod = parseInt(valveUpdatePeriodSelect.value);
+        const minutes = parseInt(valveDurationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        for (const selectedValve of selectedValves) {
+          let positionValue;
+          if (
+            latestSocketData[selectedValve] &&
+            latestSocketData[selectedValve].timestamp &&
+            (!lastSocketTimestamps[selectedValve] ||
+              lastSocketTimestamps[selectedValve] !==
+                latestSocketData[selectedValve].timestamp)
+          ) {
+            positionValue = latestSocketData[selectedValve].ValvePosition;
+            lastSocketTimestamps[selectedValve] =
+              latestSocketData[selectedValve].timestamp;
+          } else {
+            // Nếu không có dữ liệu mới, giữ lại giá trị cuối cùng
+            positionValue =
+              valveDataSeries[selectedValve] &&
+              valveDataSeries[selectedValve].length > 0
+                ? valveDataSeries[selectedValve][
+                    valveDataSeries[selectedValve].length - 1
+                  ]
+                : 0;
+          }
+
+          if (!valveDataSeries[selectedValve])
+            valveDataSeries[selectedValve] = [];
+          if (valveDataSeries[selectedValve].length >= sampleSize) {
+            valveDataSeries[selectedValve].shift();
+          }
+          valveDataSeries[selectedValve].push(positionValue);
+        }
+
+        if (valveTimeStamps.length >= sampleSize) {
+          valveTimeStamps.shift();
+        }
+        valveTimeStamps.push(currentTime);
+
+        valveChart.data.labels = valveTimeStamps;
+        // Tạo lại datasets động cho các valve được chọn
+        valveChart.data.datasets = createValveDatasets(selectedValves).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: valveDataSeries[dataset.label]
+              ? valveDataSeries[dataset.label].slice(0, valveTimeStamps.length)
+              : [],
+          })
+        );
+        valveChart.update();
+      }
+
+      // Cập nhật biểu đồ Damper với dữ liệu từ socket
+      function updateDamperChartWithSocketData() {
+        const selectedDampers = getSelectedDampers();
+        const updatePeriod = parseInt(damperUpdatePeriodSelect.value);
+        const minutes = parseInt(damperDurationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        for (const selectedDamper of selectedDampers) {
+          let positionValue;
+          if (
+            latestSocketData[selectedDamper] &&
+            latestSocketData[selectedDamper].timestamp &&
+            (!lastSocketTimestamps[selectedDamper] ||
+              lastSocketTimestamps[selectedDamper] !==
+                latestSocketData[selectedDamper].timestamp)
+          ) {
+            positionValue = latestSocketData[selectedDamper].DamperPosition;
+            lastSocketTimestamps[selectedDamper] =
+              latestSocketData[selectedDamper].timestamp;
+          } else {
+            // Nếu không có dữ liệu mới, giữ lại giá trị cuối cùng
+            positionValue =
+              damperDataSeries[selectedDamper] &&
+              damperDataSeries[selectedDamper].length > 0
+                ? damperDataSeries[selectedDamper][
+                    damperDataSeries[selectedDamper].length - 1
+                  ]
+                : 0;
+          }
+
+          if (!damperDataSeries[selectedDamper])
+            damperDataSeries[selectedDamper] = [];
+          if (damperDataSeries[selectedDamper].length >= sampleSize) {
+            damperDataSeries[selectedDamper].shift();
+          }
+          damperDataSeries[selectedDamper].push(positionValue);
+        }
+
+        if (damperTimeStamps.length >= sampleSize) {
+          damperTimeStamps.shift();
+        }
+        damperTimeStamps.push(currentTime);
+
+        damperChart.data.labels = damperTimeStamps;
+        // Tạo lại datasets động cho các damper được chọn
+        damperChart.data.datasets = createDamperDatasets(selectedDampers).map(
+          (dataset, idx) => ({
+            ...dataset,
+            data: damperDataSeries[dataset.label]
+              ? damperDataSeries[dataset.label].slice(
+                  0,
+                  damperTimeStamps.length
+                )
+              : [],
+          })
+        );
+        damperChart.update();
+      }
+
+      // Socket.IO event listeners
+      socket.on("connect", () => {});
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from server");
+      });
+
+      // Khi nhận được dữ liệu từ Socket.IO, luôn tạo lại datasets động
+      let firstSocketData = true;
+      let lastSocketTimestamps = {};
+      socket.on("socketPackages", (data) => {
+        if (data.MOTORS) {
+          const motorList = Object.keys(data.MOTORS);
+
+          // Nếu là lần đầu hoặc danh sách motor thay đổi, tạo lại datasets
+          if (
+            firstSocketData ||
+            JSON.stringify(allMotors) !== JSON.stringify(motorList)
+          ) {
+            allMotors = motorList;
+            initializeMotorDataStructures(allMotors);
+            renderMotorCheckboxes(allMotors);
+            attachMotorCheckboxListeners();
+            setupMotorDropdown(); // Thiết lập lại dropdown sau khi render
+            populateGaugeMotorSelect(allMotors); // Populate dropdown cho gauge
+            // Luôn tạo lại datasets động bằng hàm createMotorDatasets
+            motorChart.data.datasets = createMotorDatasets(allMotors);
+            firstSocketData = false;
+            initializeMotorChart();
+            // Lưu trạng thái checkbox sau khi render
+            saveCheckboxState("motor", allMotors);
+          }
+
+          const now = Date.now();
+          for (const [motorName, motorData] of Object.entries(data.MOTORS)) {
+            if (latestSocketData[motorName]) {
+              latestSocketData[motorName] = {
+                Speed: motorData.Speed, // LUÔN lấy giá trị thực tế, kể cả 0
+                timestamp: now,
+              };
+            }
+          }
+        }
+
+        if (data.VALVES) {
+          const valveList = Object.keys(data.VALVES);
+
+          // Nếu là lần đầu hoặc danh sách valve thay đổi, tạo lại datasets
+          if (
+            firstSocketData ||
+            JSON.stringify(allValves) !== JSON.stringify(valveList)
+          ) {
+            allValves = valveList;
+            initializeValveDataStructures(allValves);
+            renderValveCheckboxes(allValves);
+            attachValveCheckboxListeners();
+            setupValveDropdown();
+            populateGaugeValveSelect(allValves);
+            valveChart.data.datasets = createValveDatasets(allValves);
+            firstSocketData = false;
+            initializeValveChart();
+            // Lưu trạng thái checkbox sau khi render
+            saveCheckboxState("valve", allValves);
+          }
+
+          const now = Date.now();
+          for (const [valveName, valveData] of Object.entries(data.VALVES)) {
+            if (latestSocketData[valveName]) {
+              latestSocketData[valveName] = {
+                ValvePosition: valveData.ValvePosition,
+                timestamp: now,
+              };
+            }
+          }
+        }
+
+        if (data.DAMPERS) {
+          const damperList = Object.keys(data.DAMPERS);
+
+          // Nếu là lần đầu hoặc danh sách damper thay đổi, tạo lại datasets
+          if (
+            firstSocketData ||
+            JSON.stringify(allDampers) !== JSON.stringify(damperList)
+          ) {
+            allDampers = damperList;
+            initializeDamperDataStructures(allDampers);
+            renderDamperCheckboxes(allDampers);
+            attachDamperCheckboxListeners();
+            setupDamperDropdown();
+            populateGaugeDamperSelect(allDampers);
+            damperChart.data.datasets = createDamperDatasets(allDampers);
+            firstSocketData = false;
+            initializeDamperChart();
+            // Lưu trạng thái checkbox sau khi render
+            saveCheckboxState("damper", allDampers);
+          }
+
+          const now = Date.now();
+          for (const [damperName, damperData] of Object.entries(data.DAMPERS)) {
+            if (latestSocketData[damperName]) {
+              latestSocketData[damperName] = {
+                DamperPosition: damperData.DamperPosition,
+                timestamp: now,
+              };
+            }
+          }
+        }
+
+        // Xử lý dữ liệu Chiller
+        if (data.CHILLER) {
+          console.log("Chiller socket data:", data.CHILLER);
+          chillerData = {
+            chillerTempOut:
+              data.CHILLER.ChillerTempOut ||
+              data.CHILLER.data?.ChillerTempOut ||
+              0,
+            coolingTowerTempOut:
+              data.CHILLER.CoolingTowerTempOut ||
+              data.CHILLER.data?.CoolingTowerTempOut ||
+              0,
+          };
+          console.log("Processed chiller data:", chillerData);
+        }
+
+        // Xử lý dữ liệu Boiler
+        if (data.BOILER) {
+          console.log("Boiler socket data:", data.BOILER);
+          boilerData = {
+            boilerTempOut:
+              data.BOILER.BoilerTemperatureOutput ||
+              data.BOILER.data?.BoilerTemperatureOutput ||
+              0,
+            heatExchangerTempOut:
+              data.BOILER.HeatExchangerTemperatureOutput ||
+              data.BOILER.data?.HeatExchangerTemperatureOutput ||
+              0,
+          };
+          console.log("Processed boiler data:", boilerData);
+        }
+      });
+
+      // Timer cho cập nhật realtime Motor - Timer chạy liên tục mỗi giây
+      let motorTimeLeft = parseInt(motorUpdatePeriodSelect.value);
+      let motorTimerInterval = null;
+      motorTimeRemaining.textContent = motorTimeLeft;
+
+      // Timer cho cập nhật realtime Valve - Timer chạy liên tục mỗi giây
+      let valveTimeLeft = parseInt(valveUpdatePeriodSelect.value);
+      let valveTimerInterval = null;
+      valveTimeRemaining.textContent = valveTimeLeft;
+
+      // Timer cho cập nhật realtime Damper - Timer chạy liên tục mỗi giây
+      let damperTimeLeft = parseInt(damperUpdatePeriodSelect.value);
+      let damperTimerInterval = null;
+      damperTimeRemaining.textContent = damperTimeLeft;
+
+      // Timer cho cập nhật realtime Chiller - Timer chạy liên tục mỗi giây
+      let chillerTimeLeft = parseInt(chillerUpdatePeriodSelect.value);
+      let chillerTimerInterval = null;
+      chillerTimeRemaining.textContent = chillerTimeLeft;
+
+      // Timer cho cập nhật realtime Boiler - Timer chạy liên tục mỗi giây
+      let boilerTimeLeft = parseInt(boilerUpdatePeriodSelect.value);
+      let boilerTimerInterval = null;
+      boilerTimeRemaining.textContent = boilerTimeLeft;
+
+      // Hàm tick timer Motor - chạy mỗi giây
+      function motorTimerTick() {
+        motorTimeLeft--;
+        motorTimeRemaining.textContent = motorTimeLeft;
+
+        if (motorTimeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateMotorChartWithSocketData();
+          // Reset timer ngay lập tức
+          motorTimeLeft = parseInt(motorUpdatePeriodSelect.value);
+          motorTimeRemaining.textContent = motorTimeLeft;
+        }
+      }
+
+      // Hàm tick timer Valve - chạy mỗi giây
+      function valveTimerTick() {
+        valveTimeLeft--;
+        valveTimeRemaining.textContent = valveTimeLeft;
+
+        if (valveTimeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateValveChartWithSocketData();
+          // Reset timer ngay lập tức
+          valveTimeLeft = parseInt(valveUpdatePeriodSelect.value);
+          valveTimeRemaining.textContent = valveTimeLeft;
+        }
+      }
+
+      // Hàm tick timer Damper - chạy mỗi giây
+      function damperTimerTick() {
+        damperTimeLeft--;
+        damperTimeRemaining.textContent = damperTimeLeft;
+
+        if (damperTimeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateDamperChartWithSocketData();
+          // Reset timer ngay lập tức
+          damperTimeLeft = parseInt(damperUpdatePeriodSelect.value);
+          damperTimeRemaining.textContent = damperTimeLeft;
+        }
+      }
+
+      // Hàm tick timer Chiller - chạy mỗi giây
+      function chillerTimerTick() {
+        chillerTimeLeft--;
+        chillerTimeRemaining.textContent = chillerTimeLeft;
+
+        if (chillerTimeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateChillerChartWithSocketData();
+          // Reset timer ngay lập tức
+          chillerTimeLeft = parseInt(chillerUpdatePeriodSelect.value);
+          chillerTimeRemaining.textContent = chillerTimeLeft;
+        }
+      }
+
+      // Hàm tick timer Boiler - chạy mỗi giây
+      function boilerTimerTick() {
+        boilerTimeLeft--;
+        boilerTimeRemaining.textContent = boilerTimeLeft;
+
+        if (boilerTimeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateBoilerChartWithSocketData();
+          // Reset timer ngay lập tức
+          boilerTimeLeft = parseInt(boilerUpdatePeriodSelect.value);
+          boilerTimeRemaining.textContent = boilerTimeLeft;
+        }
+      }
+
+      // Hàm bắt đầu timer Motor
+      function startMotorTimer() {
+        if (motorTimerInterval) {
+          clearInterval(motorTimerInterval);
+        }
+        motorTimeLeft = parseInt(motorUpdatePeriodSelect.value);
+        motorTimeRemaining.textContent = motorTimeLeft;
+        motorTimerInterval = setInterval(motorTimerTick, 1000);
+      }
+
+      // Hàm bắt đầu timer Valve
+      function startValveTimer() {
+        if (valveTimerInterval) {
+          clearInterval(valveTimerInterval);
+        }
+        valveTimeLeft = parseInt(valveUpdatePeriodSelect.value);
+        valveTimeRemaining.textContent = valveTimeLeft;
+        valveTimerInterval = setInterval(valveTimerTick, 1000);
+      }
+
+      // Hàm bắt đầu timer Damper
+      function startDamperTimer() {
+        if (damperTimerInterval) {
+          clearInterval(damperTimerInterval);
+        }
+        damperTimeLeft = parseInt(damperUpdatePeriodSelect.value);
+        damperTimeRemaining.textContent = damperTimeLeft;
+        damperTimerInterval = setInterval(damperTimerTick, 1000);
+      }
+
+      // Hàm bắt đầu timer Chiller
+      function startChillerTimer() {
+        if (chillerTimerInterval) {
+          clearInterval(chillerTimerInterval);
+        }
+        chillerTimeLeft = parseInt(chillerUpdatePeriodSelect.value);
+        chillerTimeRemaining.textContent = chillerTimeLeft;
+        chillerTimerInterval = setInterval(chillerTimerTick, 1000);
+      }
+
+      // Hàm bắt đầu timer Boiler
+      function startBoilerTimer() {
+        if (boilerTimerInterval) {
+          clearInterval(boilerTimerInterval);
+        }
+        boilerTimeLeft = parseInt(boilerUpdatePeriodSelect.value);
+        boilerTimeRemaining.textContent = boilerTimeLeft;
+        boilerTimerInterval = setInterval(boilerTimerTick, 1000);
+      }
+
+      // Hàm lưu trạng thái controls
+      function saveControlState(type, controlType, value) {
+        localStorage.setItem(`${type}${controlType}`, value);
+      }
+
+      // Hàm lấy trạng thái controls
+      function getControlState(type, controlType, defaultValue) {
+        const saved = localStorage.getItem(`${type}${controlType}`);
+        return saved || defaultValue;
+      }
+
+      // Hàm khôi phục trạng thái controls
+      function restoreControlState(type, durationSelect, periodSelect) {
+        const savedDuration = getControlState(type, "Duration", "1");
+        const savedPeriod = getControlState(type, "UpdatePeriod", "1");
+
+        durationSelect.value = savedDuration;
+        periodSelect.value = savedPeriod;
+      }
+
+      // Event listeners cho các controls Motor
+      motorDurationSelect.addEventListener("change", () => {
+        saveControlState("motor", "Duration", motorDurationSelect.value);
+        initializeMotorChart().then(() => {
+          startMotorTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      motorUpdatePeriodSelect.addEventListener("change", () => {
+        saveControlState(
+          "motor",
+          "UpdatePeriod",
+          motorUpdatePeriodSelect.value
+        );
+        initializeMotorChart().then(() => {
+          startMotorTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+
+      // Event listeners cho các controls Valve
+      valveDurationSelect.addEventListener("change", () => {
+        saveControlState("valve", "Duration", valveDurationSelect.value);
+        initializeValveChart().then(() => {
+          startValveTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      valveUpdatePeriodSelect.addEventListener("change", () => {
+        saveControlState(
+          "valve",
+          "UpdatePeriod",
+          valveUpdatePeriodSelect.value
+        );
+        initializeValveChart().then(() => {
+          startValveTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+
+      // Event listeners cho các controls Damper
+      damperDurationSelect.addEventListener("change", () => {
+        saveControlState("damper", "Duration", damperDurationSelect.value);
+        initializeDamperChart().then(() => {
+          startDamperTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      damperUpdatePeriodSelect.addEventListener("change", () => {
+        saveControlState(
+          "damper",
+          "UpdatePeriod",
+          damperUpdatePeriodSelect.value
+        );
+        initializeDamperChart().then(() => {
+          startDamperTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+
+      // Event listeners cho các controls Chiller
+      chillerDurationSelect.addEventListener("change", () => {
+        saveControlState("chiller", "Duration", chillerDurationSelect.value);
+        initializeChillerChart().then(() => {
+          startChillerTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      chillerUpdatePeriodSelect.addEventListener("change", () => {
+        saveControlState(
+          "chiller",
+          "UpdatePeriod",
+          chillerUpdatePeriodSelect.value
+        );
+        initializeChillerChart().then(() => {
+          startChillerTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+
+      // Event listeners cho các controls Boiler
+      boilerDurationSelect.addEventListener("change", () => {
+        saveControlState("boiler", "Duration", boilerDurationSelect.value);
+        initializeBoilerChart().then(() => {
+          startBoilerTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      boilerUpdatePeriodSelect.addEventListener("change", () => {
+        saveControlState(
+          "boiler",
+          "UpdatePeriod",
+          boilerUpdatePeriodSelect.value
+        );
+        initializeBoilerChart().then(() => {
+          startBoilerTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+
+      // Event listeners cho checkbox motor
+      function attachMotorCheckboxListeners() {
+        const checkboxes = document.querySelectorAll("input.motor-checkbox");
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", () => {
+            // Lưu trạng thái checkbox
+            saveCheckboxState("motor", allMotors);
+            initializeMotorChart().then(() => {
+              startMotorTimer(); // Luôn restart timer khi đổi motor
+            });
+          });
+        });
+      }
+
+      // Event listeners cho checkbox valve
+      function attachValveCheckboxListeners() {
+        const checkboxes = document.querySelectorAll("input.valve-checkbox");
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", () => {
+            // Lưu trạng thái checkbox
+            saveCheckboxState("valve", allValves);
+            initializeValveChart().then(() => {
+              startValveTimer(); // Luôn restart timer khi đổi valve
+            });
+          });
+        });
+      }
+
+      // Event listeners cho checkbox damper
+      function attachDamperCheckboxListeners() {
+        const checkboxes = document.querySelectorAll("input.damper-checkbox");
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", () => {
+            // Lưu trạng thái checkbox
+            saveCheckboxState("damper", allDampers);
+            initializeDamperChart().then(() => {
+              startDamperTimer(); // Luôn restart timer khi đổi damper
+            });
+          });
+        });
+      }
+
+      // Xử lý dropdown motor - Bootstrap sẽ tự động xử lý dropdown
+      function setupMotorDropdown() {
+        // Bootstrap dropdown tự động xử lý việc mở/đóng
+        // Chỉ cần đảm bảo event listeners cho checkbox hoạt động
+        const dropdownContent = document.getElementById("motorDropdownContent");
+
+        // Ngăn dropdown đóng khi click vào checkbox
+        dropdownContent.addEventListener("click", (e) => {
+          if (
+            e.target.classList.contains("motor-checkbox") ||
+            e.target.classList.contains("form-check-label")
+          ) {
+            e.stopPropagation();
+          }
+        });
+      }
+
+      // Xử lý dropdown valve - Bootstrap sẽ tự động xử lý dropdown
+      function setupValveDropdown() {
+        const dropdownContent = document.getElementById("valveDropdownContent");
+
+        // Ngăn dropdown đóng khi click vào checkbox
+        dropdownContent.addEventListener("click", (e) => {
+          if (
+            e.target.classList.contains("valve-checkbox") ||
+            e.target.classList.contains("form-check-label")
+          ) {
+            e.stopPropagation();
+          }
+        });
+      }
+
+      // Xử lý dropdown damper - Bootstrap sẽ tự động xử lý dropdown
+      function setupDamperDropdown() {
+        const dropdownContent = document.getElementById(
+          "damperDropdownContent"
+        );
+
+        // Ngăn dropdown đóng khi click vào checkbox
+        dropdownContent.addEventListener("click", (e) => {
+          if (
+            e.target.classList.contains("damper-checkbox") ||
+            e.target.classList.contains("form-check-label")
+          ) {
+            e.stopPropagation();
+          }
+        });
+      }
+
+      // Hàm reset tất cả settings về mặc định
+      function resetAllSettings() {
+        // Xóa tất cả dữ liệu localStorage liên quan đến chart
+        const keysToRemove = [
+          "motorSelectedDevices",
+          "valveSelectedDevices",
+          "damperSelectedDevices",
+          "selectedGaugeMotor",
+          "selectedGaugeValve",
+          "selectedGaugeDamper",
+          "motorDuration",
+          "motorUpdatePeriod",
+          "valveDuration",
+          "valveUpdatePeriod",
+          "damperDuration",
+          "damperUpdatePeriod",
+          "chillerDuration",
+          "chillerUpdatePeriod",
+          "boilerDuration",
+          "boilerUpdatePeriod",
+        ];
+
+        keysToRemove.forEach((key) => {
+          localStorage.removeItem(key);
+        });
+
+        // Reset các controls về giá trị mặc định
+        motorDurationSelect.value = "1";
+        motorUpdatePeriodSelect.value = "1";
+        valveDurationSelect.value = "1";
+        valveUpdatePeriodSelect.value = "1";
+        damperDurationSelect.value = "1";
+        damperUpdatePeriodSelect.value = "1";
+        chillerDurationSelect.value = "1";
+        chillerUpdatePeriodSelect.value = "1";
+        boilerDurationSelect.value = "1";
+        boilerUpdatePeriodSelect.value = "1";
+
+        // Reset gauge selections
+        document.getElementById("gaugeMotorSelect").value = "";
+        document.getElementById("gaugeValveSelect").value = "";
+        document.getElementById("gaugeDamperSelect").value = "";
+        selectedGaugeMotor = null;
+        selectedGaugeValve = null;
+        selectedGaugeDamper = null;
+
+        // Reload trang để áp dụng reset
+        window.location.reload();
+      }
+
+      // Khi load trang lần đầu
+      window.addEventListener("DOMContentLoaded", () => {
+        // Khôi phục trạng thái controls
+        restoreControlState(
+          "motor",
+          motorDurationSelect,
+          motorUpdatePeriodSelect
+        );
+        restoreControlState(
+          "valve",
+          valveDurationSelect,
+          valveUpdatePeriodSelect
+        );
+        restoreControlState(
+          "damper",
+          damperDurationSelect,
+          damperUpdatePeriodSelect
+        );
+        restoreControlState(
+          "chiller",
+          chillerDurationSelect,
+          chillerUpdatePeriodSelect
+        );
+        restoreControlState(
+          "boiler",
+          boilerDurationSelect,
+          boilerUpdatePeriodSelect
+        );
+
+        setupMotorDropdown(); // Thiết lập dropdown motor
+        setupValveDropdown(); // Thiết lập dropdown valve
+        setupDamperDropdown(); // Thiết lập dropdown damper
+
+        // Event listener cho nút reset settings
+        document
+          .getElementById("resetSettingsBtn")
+          .addEventListener("click", () => {
+            if (
+              confirm(
+                "Are you sure you want to reset all settings to default? This will clear all your saved preferences."
+              )
+            ) {
+              resetAllSettings();
+            }
+          });
+
+        initializeMotorChart().then(() => {
+          startMotorTimer();
+        });
+        initializeValveChart().then(() => {
+          startValveTimer();
+        });
+        initializeDamperChart().then(() => {
+          startDamperTimer();
+        });
+        initializeChillerChart().then(() => {
+          startChillerTimer();
+        });
+        initializeBoilerChart().then(() => {
+          startBoilerTimer();
+        });
+        initialize(); // Đảm bảo gauge được khởi tạo sau khi DOM sẵn sàng
+      });
+
+      //Gauge Indicator
+      var gauges = [];
+      var selectedGaugeMotor = null;
+      var selectedGaugeValve = null;
+      var selectedGaugeDamper = null;
+
+      function createGauge(
+        name,
+        label,
+        min,
+        max,
+        greenZones,
+        yellowZones,
+        redZones
+      ) {
+        var config = {
+          size: 280,
+          label: label,
+          min: undefined != min ? min : 0,
+          max: undefined != max ? max : 1000,
+          majorTicks: 6,
+          minorTicks: 10,
+          greenZones: greenZones || [{ from: 0, to: 750 }],
+          yellowZones: yellowZones || [{ from: 750, to: 900 }],
+          redZones: redZones || [{ from: 900, to: 1000 }],
+        };
+
+        let containerId;
+        if (name === "valveGauge") {
+          containerId = "valveGaugeContainerSpan";
+        } else if (name === "damperGauge") {
+          containerId = "damperGaugeContainerSpan";
+        } else {
+          containerId = name + "GaugeContainer";
+        }
+
+        gauges[name] = new Gauge(containerId, config);
+        gauges[name].render();
+      }
+
+      function createGauges() {
+        createGauge(
+          "leadindicator",
+          "RPM",
+          0,
+          1000,
+          [{ from: 0, to: 750 }],
+          [{ from: 750, to: 900 }],
+          [{ from: 900, to: 1000 }]
+        );
+        createGauge(
+          "valveGauge",
+          "Percent",
+          0,
+          100,
+          [{ from: 0, to: 70 }],
+          [{ from: 70, to: 85 }],
+          [{ from: 85, to: 100 }]
+        );
+        createGauge(
+          "damperGauge",
+          "Percent",
+          0,
+          100,
+          [{ from: 0, to: 70 }],
+          [{ from: 70, to: 85 }],
+          [{ from: 85, to: 100 }]
+        );
+      }
+
+      function updateGaugeWithMotorData() {
+        if (selectedGaugeMotor && latestSocketData[selectedGaugeMotor]) {
+          const speed = latestSocketData[selectedGaugeMotor].Speed;
+          console.log(
+            "Motor Gauge update:",
+            selectedGaugeMotor,
+            speed,
+            latestSocketData[selectedGaugeMotor]
+          );
+          const gauge = gauges["leadindicator"];
+          if (gauge) {
+            gauge.redraw(speed);
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentSpeedElement = document.getElementById("currentSpeed");
+            if (currentSpeedElement) {
+              currentSpeedElement.textContent = speed + " RPM";
+            }
+            const statusElement = document.getElementById("motorStatus");
+            if (statusElement) {
+              if (speed <= 750) {
+                statusElement.textContent = "Normal";
+                statusElement.className = "h6 mb-0 text-success";
+              } else if (speed <= 900) {
+                statusElement.textContent = "Warning";
+                statusElement.className = "h6 mb-0 text-warning";
+              } else {
+                statusElement.textContent = "Critical";
+                statusElement.className = "h6 mb-0 text-danger";
+              }
+            }
+          }
+        } else {
+          // Test thử nếu không có dữ liệu
+          const gauge = gauges["leadindicator"];
+          if (gauge) {
+            gauge.redraw(500); // Test giá trị cố định
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentSpeedElement = document.getElementById("currentSpeed");
+            if (currentSpeedElement) {
+              currentSpeedElement.textContent = "500 RPM";
+            }
+            const statusElement = document.getElementById("motorStatus");
+            if (statusElement) {
+              statusElement.textContent = "Normal";
+              statusElement.className = "h6 mb-0 text-success";
+            }
+          }
+          console.log(
+            "No data for motor",
+            selectedGaugeMotor,
+            latestSocketData
+          );
+        }
+      }
+
+      function updateGaugeWithValveData() {
+        if (selectedGaugeValve && latestSocketData[selectedGaugeValve]) {
+          const position = latestSocketData[selectedGaugeValve].ValvePosition;
+          console.log(
+            "Valve Gauge update:",
+            selectedGaugeValve,
+            position,
+            latestSocketData[selectedGaugeValve]
+          );
+          const gauge = gauges["valveGauge"];
+          if (gauge) {
+            gauge.redraw(position);
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentValvePositionElement = document.getElementById("currentValvePosition");
+            if (currentValvePositionElement) {
+              currentValvePositionElement.textContent = position + " %";
+            }
+            const statusElement = document.getElementById("valveStatus");
+            if (statusElement) {
+              if (position <= 70) {
+                statusElement.textContent = "Normal";
+                statusElement.className = "h6 mb-0 text-success";
+              } else if (position <= 85) {
+                statusElement.textContent = "Warning";
+                statusElement.className = "h6 mb-0 text-warning";
+              } else {
+                statusElement.textContent = "Critical";
+                statusElement.className = "h6 mb-0 text-danger";
+              }
+            }
+          }
+        } else {
+          // Test thử nếu không có dữ liệu
+          const gauge = gauges["valveGauge"];
+          if (gauge) {
+            gauge.redraw(50); // Test giá trị cố định
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentValvePositionElement = document.getElementById("currentValvePosition");
+            if (currentValvePositionElement) {
+              currentValvePositionElement.textContent = "50 %";
+            }
+            const statusElement = document.getElementById("valveStatus");
+            if (statusElement) {
+              statusElement.textContent = "Normal";
+              statusElement.className = "h6 mb-0 text-success";
+            }
+          }
+          console.log(
+            "No data for valve",
+            selectedGaugeValve,
+            latestSocketData
+          );
+        }
+      }
+
+      function updateGaugeWithDamperData() {
+        if (selectedGaugeDamper && latestSocketData[selectedGaugeDamper]) {
+          const position = latestSocketData[selectedGaugeDamper].DamperPosition;
+          console.log(
+            "Damper Gauge update:",
+            selectedGaugeDamper,
+            position,
+            latestSocketData[selectedGaugeDamper]
+          );
+          const gauge = gauges["damperGauge"];
+          if (gauge) {
+            gauge.redraw(position);
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentDamperPositionElement = document.getElementById("currentDamperPosition");
+            if (currentDamperPositionElement) {
+              currentDamperPositionElement.textContent = position + " %";
+            }
+            const statusElement = document.getElementById("damperStatus");
+            if (statusElement) {
+              if (position <= 70) {
+                statusElement.textContent = "Normal";
+                statusElement.className = "h6 mb-0 text-success";
+              } else if (position <= 85) {
+                statusElement.textContent = "Warning";
+                statusElement.className = "h6 mb-0 text-warning";
+              } else {
+                statusElement.textContent = "Critical";
+                statusElement.className = "h6 mb-0 text-danger";
+              }
+            }
+          }
+        } else {
+          // Test thử nếu không có dữ liệu
+          const gauge = gauges["damperGauge"];
+          if (gauge) {
+            gauge.redraw(50); // Test giá trị cố định
+            // Kiểm tra element tồn tại trước khi truy cập
+            const currentDamperPositionElement = document.getElementById("currentDamperPosition");
+            if (currentDamperPositionElement) {
+              currentDamperPositionElement.textContent = "50 %";
+            }
+            const statusElement = document.getElementById("damperStatus");
+            if (statusElement) {
+              statusElement.textContent = "Normal";
+              statusElement.className = "h6 mb-0 text-success";
+            }
+          }
+          console.log(
+            "No data for damper",
+            selectedGaugeDamper,
+            latestSocketData
+          );
+        }
+      }
+
+      function populateGaugeMotorSelect(motorList) {
+        const select = document.getElementById("gaugeMotorSelect");
+        const savedSelection = localStorage.getItem("selectedGaugeMotor");
+        select.innerHTML = '<option value="">Choose motor...</option>';
+
+        motorList.forEach((motor) => {
+          const option = document.createElement("option");
+          option.value = motor;
+          option.textContent = motor;
+          if (motor === savedSelection) {
+            option.selected = true;
+            selectedGaugeMotor = motor;
+          }
+          select.appendChild(option);
+        });
+      }
+
+      function populateGaugeValveSelect(valveList) {
+        const select = document.getElementById("gaugeValveSelect");
+        const savedSelection = localStorage.getItem("selectedGaugeValve");
+        select.innerHTML = '<option value="">Choose valve...</option>';
+
+        valveList.forEach((valve) => {
+          const option = document.createElement("option");
+          option.value = valve;
+          option.textContent = valve;
+          if (valve === savedSelection) {
+            option.selected = true;
+            selectedGaugeValve = valve;
+          }
+          select.appendChild(option);
+        });
+      }
+
+      function populateGaugeDamperSelect(damperList) {
+        const select = document.getElementById("gaugeDamperSelect");
+        const savedSelection = localStorage.getItem("selectedGaugeDamper");
+        select.innerHTML = '<option value="">Choose damper...</option>';
+
+        damperList.forEach((damper) => {
+          const option = document.createElement("option");
+          option.value = damper;
+          option.textContent = damper;
+          if (damper === savedSelection) {
+            option.selected = true;
+            selectedGaugeDamper = damper;
+          }
+          select.appendChild(option);
+        });
+      }
+
+      function setupGaugeMotorSelect() {
+        const select = document.getElementById("gaugeMotorSelect");
+        select.addEventListener("change", (e) => {
+          selectedGaugeMotor = e.target.value;
+          // Lưu lựa chọn gauge vào localStorage
+          localStorage.setItem("selectedGaugeMotor", selectedGaugeMotor);
+          if (selectedGaugeMotor) {
+            // Reset gauge về 0 khi chọn motor mới
+            const gauge = gauges["leadindicator"];
+            if (gauge) {
+              gauge.redraw(0);
+            }
+            document.getElementById("currentSpeed").textContent = "0 RPM";
+            document.getElementById("motorStatus").textContent = "Normal";
+            document.getElementById("motorStatus").className =
+              "h6 mb-0 text-success";
+          }
+        });
+      }
+
+      function setupGaugeValveSelect() {
+        const select = document.getElementById("gaugeValveSelect");
+        select.addEventListener("change", (e) => {
+          selectedGaugeValve = e.target.value;
+          // Lưu lựa chọn gauge vào localStorage
+          localStorage.setItem("selectedGaugeValve", selectedGaugeValve);
+          if (selectedGaugeValve) {
+            // Reset gauge về 0 khi chọn valve mới
+            const gauge = gauges["valveGauge"];
+            if (gauge) {
+              gauge.redraw(0);
+            }
+            document.getElementById("currentValvePosition").textContent = "0 %";
+            document.getElementById("valveStatus").textContent = "Normal";
+            document.getElementById("valveStatus").className =
+              "h6 mb-0 text-success";
+          }
+        });
+      }
+
+      function setupGaugeDamperSelect() {
+        const select = document.getElementById("gaugeDamperSelect");
+        select.addEventListener("change", (e) => {
+          selectedGaugeDamper = e.target.value;
+          // Lưu lựa chọn gauge vào localStorage
+          localStorage.setItem("selectedGaugeDamper", selectedGaugeDamper);
+          if (selectedGaugeDamper) {
+            // Reset gauge về 0 khi chọn damper mới
+            const gauge = gauges["damperGauge"];
+            if (gauge) {
+              gauge.redraw(0);
+            }
+            document.getElementById("currentDamperPosition").textContent =
+              "0 %";
+            document.getElementById("damperStatus").textContent = "Normal";
+            document.getElementById("damperStatus").className =
+              "h6 mb-0 text-success";
+          }
+        });
+      }
+
+      function initialize() {
+        createGauges();
+        setupGaugeMotorSelect();
+        setupGaugeValveSelect();
+        setupGaugeDamperSelect();
+        // Cập nhật gauge mỗi giây
+        setInterval(updateGaugeWithMotorData, 1000);
+        setInterval(updateGaugeWithValveData, 1000);
+        setInterval(updateGaugeWithDamperData, 1000);
+      }
+    </script>
+  </body>
+</html>

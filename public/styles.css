@@ -1,0 +1,207 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    font-family: 'Quicksand', Arial, sans-serif;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Modern, beautiful navbar styles */
+.navbar, .navbar .container-fluid {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+}
+.navbar {
+    background: linear-gradient(90deg, #132d65 0%, #132d65 100%) !important;
+    box-shadow: 0 2px 8px rgba(30,64,175,0.08), 0 1.5px 0 rgba(0,0,0,0.03);
+    min-height: 64px;
+    border-bottom: 1.5px solid #1741a0;
+    z-index: 1000;
+}
+.navbar .navbar-brand {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar .navbar-nav .nav-link {
+    color: #e0e7ef !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 0.5rem;
+    transition: background 0.2s, color 0.2s;
+}
+.navbar .navbar-nav .nav-link:hover, .navbar .navbar-nav .nav-link.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff !important;
+}
+.navbar .navbar-nav .nav-link.disabled {
+    background: none !important;
+    color: #fbbf24 !important;
+    font-weight: 600;
+    opacity: 1 !important;
+    cursor: default;
+}
+.navbar .navbar-nav .nav-item {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+@media (max-width: 768px) {
+    .navbar .navbar-brand {
+        font-size: 1.3rem;
+    }
+    .navbar .navbar-nav .nav-link {
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem !important;
+    }
+}
+
+/* Card styles */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    background: #fff;
+}
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    padding: 1rem;
+}
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Table styles */
+.table {
+    background: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1rem;
+}
+.table thead th {
+    background: #e0e7ef;
+    font-weight: 600;
+}
+.table-bordered {
+    border: 1px solid #d1d5db;
+}
+.table-bordered th, .table-bordered td {
+    border: 1px solid #d1d5db;
+}
+
+/* Dashboard table and control column custom styles */
+.dashboard-table th, .dashboard-table td {
+    padding: 0.5rem 0.5rem;
+    font-size: 1rem;
+}
+.dashboard-table td:last-child, .dashboard-table th:last-child {
+    text-align: center;
+    vertical-align: middle;
+}
+.dashboard-table td .control-btn-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}
+.dashboard-table td .setpoint-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+.dashboard-table td .setpoint-group input.form-control {
+    max-width: 100px;
+    min-width: 60px;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+}
+.dashboard-table td .setpoint-group button {
+    min-width: 60px;
+    font-size: 1rem;
+    padding: 0.25rem 0.75rem;
+}
+
+/* Form styles */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+.form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Button styles */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.btn-primary {
+    background: #2563eb;
+    border: none;
+    font-weight: 600;
+}
+.btn-primary:hover {
+    background: #1e40af;
+}
+
+/* Footer styles */
+footer {
+    flex-shrink: 0;
+    padding: 1.5rem 0;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    width: 100%;
+    box-shadow: 0 -2px 4px rgba(0,0,0,.1);
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .card-body, .card-header {
+        padding: 1rem;
+    }
+    .dashboard-table th, .dashboard-table td {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.3rem;
+    }
+}
+@media (max-width: 575.98px) {
+    .dashboard-table th, .dashboard-table td {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.2rem;
+    }
+    .card-header, .card-body {
+        padding: 0.7rem;
+    }
+}

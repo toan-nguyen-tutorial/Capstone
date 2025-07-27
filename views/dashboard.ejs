@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HVAC System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body style="padding:0;margin:0;">
+    <%- include('partials/navbar') %>
+
+    <div class="container-fluid py-1">
+        <div class="content-wrapper">
+            <!-- Device Type Selector -->
+            <div class="row mb-1">
+                <div class="col-12 d-flex align-items-center" style="gap: 10px;">
+                    <label for="deviceSelect" class="form-label fw-bold mb-0">Select device type:</label>
+                    <select id="deviceSelect" class="form-select" style="width:125px">
+                        <option value="motor">Motor</option>
+                        <option value="valve">Valve</option>
+                        <option value="damper">Damper</option>
+                        <option value="ahu">AHU</option>
+                        <option value="chiller">Chiller</option>
+                        <option value="boiler">Boiler</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Device Control Cards -->
+            <div class="row g-2 mt-1">
+                <!-- Motor Card -->
+                <div class="col-12 device-card" id="card-motor">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-primary text-white rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-gear-fill me-2"></i>
+                            <span class="fw-bold fs-5">Motors</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle mb-0 dashboard-table" id="motors-table">
+                                    <thead class="table-primary text-center">
+                                        <tr>
+                                            <th>Motor</th>
+                                            <th>Mode</th>
+                                            <th>Start</th>
+                                            <th>Stop</th>
+                                            <th>Reset</th>
+                                            <th>State</th>
+                                            <th>Speed</th>
+                                            <th>Runtime</th>
+                                            <th>Fault</th>
+                                            <th>Control</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Valve Card -->
+                <div class="col-12 device-card" id="card-valve" style="display:none">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-success text-white rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-droplet-half me-2"></i>
+                            <span class="fw-bold fs-5">Valves</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle mb-0 dashboard-table" id="valves-table">
+                                    <thead class="table-success text-center">
+                                        <tr>
+                                            <th>Valve</th>
+                                            <th>Mode</th>
+                                            <th>Open</th>
+                                            <th>Close</th>
+                                            <th>Reset</th>
+                                            <th>State</th>
+                                            <th>Valve Position</th>
+                                            <th>Fault</th>
+                                            <th>Control</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Damper Card -->
+                <div class="col-12 device-card" id="card-damper" style="display:none">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-info text-white rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-wind me-2"></i>
+                            <span class="fw-bold fs-5">Dampers</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle mb-0 dashboard-table" id="dampers-table">
+                                    <thead class="table-info text-center">
+                                        <tr>
+                                            <th>Damper</th>
+                                            <th>Mode</th>
+                                            <th>Open</th>
+                                            <th>Close</th>
+                                            <th>Reset</th>
+                                            <th>State</th>
+                                            <th>Damper Position</th>
+                                            <th>Fault</th>
+                                            <th>Control</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- AHU Card -->
+                <div class="col-12 device-card" id="card-ahu" style="display:none">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-warning text-dark rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-fan me-2"></i>
+                            <span class="fw-bold fs-5">AHU</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="ahu-card" class="p-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chiller Card -->
+                <div class="col-12 device-card" id="card-chiller" style="display:none">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-danger text-white rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-thermometer-half me-2"></i>
+                            <span class="fw-bold fs-5">Chiller</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="chiller-card" class="p-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Boiler Card -->
+                <div class="col-12 device-card" id="card-boiler" style="display:none">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-header bg-secondary text-white rounded-top-4 d-flex align-items-center">
+                            <i class="bi bi-fire me-2"></i>
+                            <span class="fw-bold fs-5">Boiler</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="boiler-card" class="p-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Command Modal (English) -->
+    <div class="modal fade" id="controlModal" tabindex="-1" aria-labelledby="controlModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="controlModalLabel">Send Control Command</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="controlForm">
+              <div class="mb-3">
+                <label for="deviceInput" class="form-label">Device name (e.g. Valve_5, MOTOR_10, BOILER...)</label>
+                <input type="text" class="form-control" id="deviceInput" required>
+              </div>
+              <div class="mb-3">
+                <label for="propertyInput" class="form-label">Property</label>
+                <select class="form-select" id="propertyInput" required>
+                  <option value="">--Select property--</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="valueInput" class="form-label">Value</label>
+                <input type="text" class="form-control" id="valueInput" required>
+              </div>
+              <div id="controlError" class="text-danger mb-2" style="display:none"></div>
+              <button type="submit" class="btn btn-primary">Send Command</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-3 bg-light mt-5">
+        <small>HVAC Dashboard &copy; 2024</small>
+    </footer>
+
+    <!-- Socket.IO & Dynamic Table Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        function boolDisplay(val) {
+            if (val === true) return '<span class="text-success fw-bold">ON</span>';
+            if (val === false) return '<span class="text-danger fw-bold">OFF</span>';
+            return '';
+        }
+        // Cập nhật bảng Motors
+        function renderMotors(motors) {
+            const tbody = document.querySelector('#motors-table tbody');
+            if (!tbody) {
+                console.error('Không tìm thấy bảng motors-table trong DOM!');
+                return;
+            }
+            const speedInputs = {};
+            Object.entries(motors).forEach(([name]) => {
+                const el = document.getElementById('motor-speed-' + name);
+                if (el) speedInputs[name] = el.value;
+            });
+            tbody.innerHTML = '';
+            Object.entries(motors).forEach(([name, motor]) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${name}</td>
+                    <td>${boolDisplay(motor.Mode)}</td>
+                    <td>${boolDisplay(motor.Start)}</td>
+                    <td>${boolDisplay(motor.Stop)}</td>
+                    <td>${boolDisplay(motor.Reset)}</td>
+                    <td>${boolDisplay(motor.RunFeedback)}</td>
+                    <td>${typeof motor.Speed === 'number' ? motor.Speed.toFixed(2) : ''}</td>
+                    <td>${motor.Runtime ? motor.Runtime : ''}</td>
+                    <td>${boolDisplay(motor.Fault)}</td>
+                    <td>
+                        <div class='control-btn-group'>
+                            <button class="btn btn-success btn-sm"
+                                onmousedown="sendControl('${name}','Start',1)"
+                                onmouseup="sendControl('${name}','Start',0)"
+                                onmouseleave="sendControl('${name}','Start',0)"
+                                ontouchstart="sendControl('${name}','Start',1)"
+                                ontouchend="sendControl('${name}','Start',0)">Start</button>
+                            <button class="btn btn-danger btn-sm"
+                                onmousedown="sendControl('${name}','Stop',1)"
+                                onmouseup="sendControl('${name}','Stop',0)"
+                                onmouseleave="sendControl('${name}','Stop',0)"
+                                ontouchstart="sendControl('${name}','Stop',1)"
+                                ontouchend="sendControl('${name}','Stop',0)">Stop</button>
+                            <button class="btn btn-warning btn-sm"
+                                onmousedown="sendControl('${name}','Reset',1)"
+                                onmouseup="sendControl('${name}','Reset',0)"
+                                onmouseleave="sendControl('${name}','Reset',0)"
+                                ontouchstart="sendControl('${name}','Reset',1)"
+                                ontouchend="sendControl('${name}','Reset',0)">Reset</button>
+                            <input type='text' class='form-control' placeholder='SetSpeed' id='motor-speed-${name}' style='max-width:125px;'>
+                            <button class='btn btn-primary' onclick="sendSetpoint('Motor','${name}')">Send</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            // Motor setpoint giữ focus
+            Object.entries(motors).forEach(([name]) => {
+                if (speedInputs[name] !== undefined) {
+                    const el = document.getElementById('motor-speed-' + name);
+                    if (el && document.activeElement !== el) el.value = speedInputs[name];
+                }
+            });
+        }
+        // Valves
+        function renderValves(valves) {
+            const tbody = document.querySelector('#valves-table tbody');
+            if (!tbody) {
+                console.error('Không tìm thấy bảng valves-table trong DOM!');
+                return;
+            }
+            const posInputs = {};
+            Object.entries(valves).forEach(([name]) => {
+                const el = document.getElementById('valve-pos-' + name);
+                if (el) posInputs[name] = el.value;
+            });
+            tbody.innerHTML = '';
+            Object.entries(valves).forEach(([name, valve]) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${name}</td>
+                    <td>${boolDisplay(valve.Mode)}</td>
+                    <td>${boolDisplay(valve.Open)}</td>
+                    <td>${boolDisplay(valve.Close)}</td>
+                    <td>${boolDisplay(valve.Reset)}</td>
+                    <td>${boolDisplay(valve.OpenFeedback)}</td>
+                    <td>${typeof valve.ValvePosition === 'number' ? valve.ValvePosition.toFixed(2) : ''}</td>
+                    <td>${boolDisplay(valve.Fault)}</td>
+                    <td>
+                        <div class='control-btn-group'>
+                            <button class="btn btn-success btn-sm"
+                                onmousedown="sendControl('${name}','Open',1)"
+                                onmouseup="sendControl('${name}','Open',0)"
+                                onmouseleave="sendControl('${name}','Open',0)"
+                                ontouchstart="sendControl('${name}','Open',1)"
+                                ontouchend="sendControl('${name}','Open',0)">Open</button>
+                            <button class="btn btn-danger btn-sm"
+                                onmousedown="sendControl('${name}','Close',1)"
+                                onmouseup="sendControl('${name}','Close',0)"
+                                onmouseleave="sendControl('${name}','Close',0)"
+                                ontouchstart="sendControl('${name}','Close',1)"
+                                ontouchend="sendControl('${name}','Close',0)">Close</button>
+                            <button class="btn btn-warning btn-sm"
+                                onmousedown="sendControl('${name}','Reset',1)"
+                                onmouseup="sendControl('${name}','Reset',0)"
+                                onmouseleave="sendControl('${name}','Reset',0)"
+                                ontouchstart="sendControl('${name}','Reset',1)"
+                                ontouchend="sendControl('${name}','Reset',0)">Reset</button>
+                            <input type='text' class='form-control' placeholder='SetPosition' id='valve-pos-${name}' style='max-width:136px;'>
+                            <button class='btn btn-primary' onclick="sendSetpoint('Valve','${name}')">Send</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            // Valve setpoint giữ focus
+            Object.entries(valves).forEach(([name]) => {
+                if (posInputs[name] !== undefined) {
+                    const el = document.getElementById('valve-pos-' + name);
+                    if (el && document.activeElement !== el) el.value = posInputs[name];
+                }
+            });
+        }
+        // Dampers
+        function renderDampers(dampers) {
+            const tbody = document.querySelector('#dampers-table tbody');
+            if (!tbody) {
+                console.error('Không tìm thấy bảng dampers-table trong DOM!');
+                return;
+            }
+            const damperInputs = {};
+            Object.entries(dampers).forEach(([name]) => {
+                const el = document.getElementById('damper-pos-' + name);
+                if (el) damperInputs[name] = el.value;
+            });
+            tbody.innerHTML = '';
+            Object.entries(dampers).forEach(([name, damper]) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${name}</td>
+                    <td>${boolDisplay(damper.Mode)}</td>
+                    <td>${boolDisplay(damper.Open)}</td>
+                    <td>${boolDisplay(damper.Close)}</td>
+                    <td>${boolDisplay(damper.Reset)}</td>
+                    <td>${boolDisplay(damper.OpenFeedback)}</td>
+                    <td>${typeof damper.DamperPosition === 'number' ? damper.DamperPosition.toFixed(2) : ''}</td>
+                    <td>${boolDisplay(damper.Fault)}</td>
+                    <td>
+                        <div class='control-btn-group'>
+                            <button class="btn btn-success btn-sm"
+                                onmousedown="sendControl('${name}','Open',1)"
+                                onmouseup="sendControl('${name}','Open',0)"
+                                onmouseleave="sendControl('${name}','Open',0)"
+                                ontouchstart="sendControl('${name}','Open',1)"
+                                ontouchend="sendControl('${name}','Open',0)">Open</button>
+                            <button class="btn btn-danger btn-sm"
+                                onmousedown="sendControl('${name}','Close',1)"
+                                onmouseup="sendControl('${name}','Close',0)"
+                                onmouseleave="sendControl('${name}','Close',0)"
+                                ontouchstart="sendControl('${name}','Close',1)"
+                                ontouchend="sendControl('${name}','Close',0)">Close</button>
+                            <button class="btn btn-warning btn-sm"
+                                onmousedown="sendControl('${name}','Reset',1)"
+                                onmouseup="sendControl('${name}','Reset',0)"
+                                onmouseleave="sendControl('${name}','Reset',0)"
+                                ontouchstart="sendControl('${name}','Reset',1)"
+                                ontouchend="sendControl('${name}','Reset',0)">Reset</button>
+                            <input type='text' class='form-control' placeholder='SetPosition' id='damper-pos-${name}' style='max-width:136px;'>
+                            <button class='btn btn-primary' onclick="sendSetpoint('Damper','${name}')">Send</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            // Damper setpoint giữ focus
+            Object.entries(dampers).forEach(([name]) => {
+                if (damperInputs[name] !== undefined) {
+                    const el = document.getElementById('damper-pos-' + name);
+                    if (el && document.activeElement !== el) el.value = damperInputs[name];
+                }
+            });
+        }
+        // AHU
+        function renderAHU(ahu) {
+            const card = document.getElementById('ahu-card');
+            if (!ahu) return card.innerHTML = '<em>No data</em>';
+            card.innerHTML = `
+                <div class="row">
+                    <div class="col-md-3"><b>Start:</b> ${boolDisplay(ahu.Start)}</div>
+                    <div class="col-md-3"><b>Stop:</b> ${boolDisplay(ahu.Stop)}</div>
+                    <div class="col-md-3"><b>S1:</b> ${boolDisplay(ahu.S1)}</div>
+                    <div class="col-md-3"><b>S2:</b> ${boolDisplay(ahu.S2)}</div>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-success btn-sm"
+                        onmousedown="sendControl('AHU','Start',1)"
+                        onmouseup="sendControl('AHU','Start',0)"
+                        onmouseleave="sendControl('AHU','Start',0)"
+                        ontouchstart="sendControl('AHU','Start',1)"
+                        ontouchend="sendControl('AHU','Start',0)">Start</button>
+                    <button class="btn btn-danger btn-sm"
+                        onmousedown="sendControl('AHU','Stop',1)"
+                        onmouseup="sendControl('AHU','Stop',0)"
+                        onmouseleave="sendControl('AHU','Stop',0)"
+                        ontouchstart="sendControl('AHU','Stop',1)"
+                        ontouchend="sendControl('AHU','Stop',0)">Stop</button>
+                </div>
+            `;
+        }
+        // Chiller
+        function renderChiller(chiller) {
+            const card = document.getElementById('chiller-card');
+            if (!chiller) return card.innerHTML = '<em>No data</em>';
+            const chillerSetpoints = {
+                ChillerTempSP: '',
+                CoolingTowerTempSP: ''
+            };
+            Object.keys(chillerSetpoints).forEach(key => {
+                const el = document.getElementById('chiller-setpoint-' + key);
+                if (el) chillerSetpoints[key] = el.value;
+            });
+            card.innerHTML = `
+                <div class="row">
+                    <div class="col-md-2"><b>Start:</b> ${boolDisplay(chiller.Start)}</div>
+                    <div class="col-md-2"><b>Stop:</b> ${boolDisplay(chiller.Stop)}</div>
+                    <div class="col-md-2"><b>S1:</b> ${boolDisplay(chiller.S1)}</div>
+                    <div class="col-md-2"><b>S2:</b> ${boolDisplay(chiller.S2)}</div>
+                    <div class="col-md-2"><b>S3:</b> ${boolDisplay(chiller.S3)}</div>
+                    <div class="col-md-2"><b>S4:</b> ${boolDisplay(chiller.S4)}</div>
+                    <div class="col-md-2"><b>S5:</b> ${boolDisplay(chiller.S5)}</div>
+                    <div class="col-md-2"><b>CoolingTowerTempSP:</b> ${typeof chiller.CoolingTowerTempSP === 'number' ? chiller.CoolingTowerTempSP.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>CoolingTowerTempOut:</b> ${typeof chiller.CoolingTowerTempOut === 'number' ? chiller.CoolingTowerTempOut.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>ChillerTempSP:</b> ${typeof chiller.ChillerTempSP === 'number' ? chiller.ChillerTempSP.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>ChillerTempOut:</b> ${typeof chiller.ChillerTempOut === 'number' ? chiller.ChillerTempOut.toFixed(2) : ''}</div>
+                </div>
+                <div class="mt-2 d-flex flex-column gap-2">
+                    <div class='setpoint-group'>
+                        <input type='text' class='form-control' placeholder='ChillerTempSP' id='chiller-setpoint-ChillerTempSP'>
+                        <button class='btn btn-primary' onclick="sendSetpoint('Chiller','CHILLER','ChillerTempSP')">Send</button>
+                    </div>
+                    <div class='setpoint-group'>
+                        <input type='text' class='form-control' placeholder='CoolingTowerTempSP' id='chiller-setpoint-CoolingTowerTempSP'>
+                        <button class='btn btn-primary' onclick="sendSetpoint('Chiller','CHILLER','CoolingTowerTempSP')">Send</button>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-success btn-sm"
+                            onmousedown="sendControl('CHILLER','Start',1)"
+                            onmouseup="sendControl('CHILLER','Start',0)"
+                            onmouseleave="sendControl('CHILLER','Start',0)"
+                            ontouchstart="sendControl('CHILLER','Start',1)"
+                            ontouchend="sendControl('CHILLER','Start',0)">Start</button>
+                        <button class="btn btn-danger btn-sm"
+                            onmousedown="sendControl('CHILLER','Stop',1)"
+                            onmouseup="sendControl('CHILLER','Stop',0)"
+                            onmouseleave="sendControl('CHILLER','Stop',0)"
+                            ontouchstart="sendControl('CHILLER','Stop',1)"
+                            ontouchend="sendControl('CHILLER','Stop',0)">Stop</button>
+                    </div>
+                </div>
+            `;
+            // Chiller setpoint giữ focus
+            Object.keys(chillerSetpoints).forEach(key => {
+                if (chillerSetpoints[key] !== undefined) {
+                    const el = document.getElementById('chiller-setpoint-' + key);
+                    if (el && document.activeElement !== el) el.value = chillerSetpoints[key];
+                }
+            });
+        }
+        // Boiler
+        function renderBoiler(boiler) {
+            const card = document.getElementById('boiler-card');
+            if (!boiler) return card.innerHTML = '<em>No data</em>';
+            const boilerSetpoints = {
+                BoilerTemperatureSetpoint: '',
+                HeatExchangerTemperatureSetpoint: ''
+            };
+            Object.keys(boilerSetpoints).forEach(key => {
+                const el = document.getElementById('boiler-setpoint-' + key);
+                if (el) boilerSetpoints[key] = el.value;
+            });
+            card.innerHTML = `
+                <div class="row">
+                    <div class="col-md-2"><b>Start:</b> ${boolDisplay(boiler.Start)}</div>
+                    <div class="col-md-2"><b>Stop:</b> ${boolDisplay(boiler.Stop)}</div>
+                    <div class="col-md-2"><b>State1:</b> ${boolDisplay(boiler.State1)}</div>
+                    <div class="col-md-2"><b>State2:</b> ${boolDisplay(boiler.State2)}</div>
+                    <div class="col-md-2"><b>State3:</b> ${boolDisplay(boiler.State3)}</div>
+                    <div class="col-md-2"><b>State4:</b> ${boolDisplay(boiler.State4)}</div>
+                    <div class="col-md-2"><b>State5:</b> ${boolDisplay(boiler.State5)}</div>
+                    <div class="col-md-2"><b>BoilerTemperatureSetpoint:</b> ${typeof boiler.BoilerTemperatureSetpoint === 'number' ? boiler.BoilerTemperatureSetpoint.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>BoilerTemperatureOutput:</b> ${typeof boiler.BoilerTemperatureOutput === 'number' ? boiler.BoilerTemperatureOutput.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>HeatExchangerTemperatureOutput:</b> ${typeof boiler.HeatExchangerTemperatureOutput === 'number' ? boiler.HeatExchangerTemperatureOutput.toFixed(2) : ''}</div>
+                    <div class="col-md-2"><b>HeatExchangerTemperatureSetpoint:</b> ${typeof boiler.HeatExchangerTemperatureSetpoint === 'number' ? boiler.HeatExchangerTemperatureSetpoint.toFixed(2) : ''}</div>
+                </div>
+                <div class="mt-2 d-flex flex-column gap-2">
+                    <div class='setpoint-group'>
+                        <input type='text' class='form-control' placeholder='BoilerTemperatureSetpoint' id='boiler-setpoint-BoilerTemperatureSetpoint'>
+                        <button class='btn btn-primary' onclick="sendSetpoint('Boiler','BOILER','BoilerTemperatureSetpoint')">Send</button>
+                    </div>
+                    <div class='setpoint-group'>
+                        <input type='text' class='form-control' placeholder='HeatExchangerTemperatureSetpoint' id='boiler-setpoint-HeatExchangerTemperatureSetpoint'>
+                        <button class='btn btn-primary' onclick="sendSetpoint('Boiler','BOILER','HeatExchangerTemperatureSetpoint')">Send</button>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-success btn-sm"
+                            onmousedown="sendControl('BOILER','Start',1)"
+                            onmouseup="sendControl('BOILER','Start',0)"
+                            onmouseleave="sendControl('BOILER','Start',0)"
+                            ontouchstart="sendControl('BOILER','Start',1)"
+                            ontouchend="sendControl('BOILER','Start',0)">Start</button>
+                        <button class="btn btn-danger btn-sm"
+                            onmousedown="sendControl('BOILER','Stop',1)"
+                            onmouseup="sendControl('BOILER','Stop',0)"
+                            onmouseleave="sendControl('BOILER','Stop',0)"
+                            ontouchstart="sendControl('BOILER','Stop',1)"
+                            ontouchend="sendControl('BOILER','Stop',0)">Stop</button>
+                    </div>
+                </div>
+            `;
+            // Boiler setpoint giữ focus
+            Object.keys(boilerSetpoints).forEach(key => {
+                if (boilerSetpoints[key] !== undefined) {
+                    const el = document.getElementById('boiler-setpoint-' + key);
+                    if (el && document.activeElement !== el) el.value = boilerSetpoints[key];
+                }
+            });
+        }
+        // Gửi lệnh điều khiển qua socketio
+        function sendControl(device, property, value) {
+            socket.emit('control', { device, property, value });
+        }
+        // Thêm hàm JS xử lý gửi setpoint:
+        function sendSetpoint(type, name, property) {
+            let value = '';
+            if(type === 'Motor') {
+                property = 'SetSpeed';
+                value = document.getElementById('motor-speed-' + name).value;
+            } else if(type === 'Valve') {
+                property = 'SetPosition';
+                value = document.getElementById('valve-pos-' + name).value;
+            } else if(type === 'Damper') {
+                property = 'SetPosition';
+                value = document.getElementById('damper-pos-' + name).value;
+            } else if(type === 'Boiler') {
+                value = document.getElementById('boiler-setpoint-' + property).value;
+            } else if(type === 'Chiller') {
+                value = document.getElementById('chiller-setpoint-' + property).value;
+            }
+            if(value === '') {
+                alert('Please enter a value!');
+                return;
+            }
+            socket.emit('control', {
+                device: name,
+                property,
+                value: value
+            });
+        }
+        // --- Giữ focus khi render lại bảng ---
+        function preserveInputFocus(renderFn) {
+            const active = document.activeElement;
+            const id = active && active.id;
+            const selStart = active && active.selectionStart;
+            const selEnd = active && active.selectionEnd;
+            renderFn();
+            if (id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.focus();
+                    if (selStart !== null && selEnd !== null && el.setSelectionRange) {
+                        el.setSelectionRange(selStart, selEnd);
+                    }
+                }
+            }
+        }
+        // Lắng nghe dữ liệu từ server
+        socket.on('socketPackages', function(data) {
+            if (data.MOTORS) preserveInputFocus(() => renderMotors(data.MOTORS));
+            if (data.VALVES) preserveInputFocus(() => renderValves(data.VALVES));
+            if (data.DAMPERS) preserveInputFocus(() => renderDampers(data.DAMPERS));
+            if (data.AHU) renderAHU(data.AHU);
+            if (data.CHILLER) renderChiller(data.CHILLER);
+            if (data.BOILER) renderBoiler(data.BOILER);
+        });
+
+        // Thêm script chuyển đổi hiển thị card theo loại thiết bị
+        const deviceSelect = document.getElementById('deviceSelect');
+        const cardIds = {
+            motor: 'card-motor',
+            valve: 'card-valve',
+            damper: 'card-damper',
+            ahu: 'card-ahu',
+            chiller: 'card-chiller',
+            boiler: 'card-boiler'
+        };
+        deviceSelect.addEventListener('change', function() {
+            Object.values(cardIds).forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById(cardIds[this.value]).style.display = '';
+        });
+        // Hiển thị mặc định card motor
+        window.addEventListener('DOMContentLoaded', function() {
+            deviceSelect.value = 'motor';
+            Object.values(cardIds).forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById(cardIds['motor']).style.display = '';
+        });
+
+        const allowedSetProps = [
+            "SetPosition", "SetSpeed",
+            "BoilerTemperatureSetpoint", "HeatExchangerTemperatureOutput",
+            "ChillerTempSP", "CoolingTowerTempSP"
+        ];
+        // Populate property select
+        const propertyInput = document.getElementById('propertyInput');
+        allowedSetProps.forEach(prop => {
+            const opt = document.createElement('option');
+            opt.value = prop;
+            opt.textContent = prop;
+            propertyInput.appendChild(opt);
+        });
+        // Open modal and set device type
+        let currentDeviceType = '';
+        function openControlModal(deviceType) {
+            currentDeviceType = deviceType;
+            document.getElementById('deviceInput').value = '';
+            document.getElementById('propertyInput').value = '';
+            document.getElementById('valueInput').value = '';
+            document.getElementById('controlError').style.display = 'none';
+            const modal = new bootstrap.Modal(document.getElementById('controlModal'));
+            modal.show();
+        }
+        // Handle form submit
+        document.getElementById('controlForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const device = document.getElementById('deviceInput').value.trim();
+            const property = document.getElementById('propertyInput').value;
+            const value = document.getElementById('valueInput').value;
+            const errorDiv = document.getElementById('controlError');
+            if (!allowedSetProps.includes(property)) {
+                errorDiv.textContent = 'Property không hợp lệ!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            if (!device) {
+                errorDiv.textContent = 'Vui lòng nhập tên thiết bị!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            if (value === '' || isNaN(value)) {
+                errorDiv.textContent = 'Vui lòng nhập giá trị hợp lệ!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            // Gửi lệnh qua socketio
+            socket.emit('control', {
+                device,
+                property,
+                value: parseFloat(value)
+            });
+            // Đóng modal
+            bootstrap.Modal.getInstance(document.getElementById('controlModal')).hide();
+        });
+    </script>
+</body>
+</html> 

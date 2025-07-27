@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Realtime Chart</title>
+    <!-- Thư viện Chart.js để vẽ biểu đồ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Socket.IO client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      /* CSS cơ bản cho layout */
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      
+
+    </style>
+    <!-- Bootstrap CSS cho styling -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <!-- Include navbar từ partial -->
+    <%- include('partials/navbar') %>
+   
+      <div class="container-fluid">
+        <!-- Sidebar chứa các controls -->
+         <div class="row">
+          <div class="col-9">
+            <div class="row border">
+              <div class="col-2 border" style="background-color: rgb(34, 45, 50);">
+                <div class="sidebar text-white">
+                  <i class="bi bi-gear me-1"></i> Setting
+                  <div>
+                      <!-- Dropdown để chọn chu kỳ cập nhật dữ liệu -->
+                      <div class="mt-2 d-flex align-items-center mb-2 ">
+                        <span class="fs-6">Period</span>
+                        <select id="updatePeriod" class="form-select border-primary ms-3">
+                        <option value="1" selected>1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                      </select>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="mt-2 d-flex align-items-center mb-2">
+                        <span class="fs-6">Remaining</span>
+                        <div class="form-control form-control-sm w-auto border-primary ms-auto" id="timeRemaining">0</div>
+                      </div>
+                    </div>
+                    <div>
+                      <!-- Dropdown để chọn thời gian buffer (số phút dữ liệu hiển thị) -->
+                      <span>Time Buffer</span><br />
+                      <select id="duration" class="form-select w-100 border-primary">
+                        <option value="1">1 minutes</option>
+                        <option value="5">5 minutes</option>
+                      </select>
+                    </div>
+                    <div class="mt-2">
+                       <span>Motor</span><br />
+                      <div class="dropdown">
+                        <button class="btn btn-outline-primary btn-sm w-100 dropdown-toggle text-white" type="button" id="motorDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i></i>  Select
+                        </button>
+                        <ul class="dropdown-menu" id="motorDropdownContent" style="max-height: 300px; overflow-y: auto;">
+                          <!-- Checkboxes sẽ được render động ở đây -->
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+              </div>
+              <div class="col-10 border">
+              <div class="chart-area">
+                <!-- Canvas để vẽ biểu đồ -->
+                <canvas id="myChart"></canvas>
+              </div>
+              </div>
+            </div>
+          </div>
+         </div>
+
+      </div>
+
+
+
+    <script>
+      // Khởi tạo Socket.IO connection
+      const socket = io();
+
+      // Danh sách motor động
+      let allMotors = [];
+
+      // Hàm render checkbox motor động
+      function renderMotorCheckboxes(motorList) {
+        const dropdownContent = document.getElementById('motorDropdownContent');
+        let html = '';
+        motorList.forEach((motor, idx) => {
+          html += `<li><a class="dropdown-item" href="#">
+            <div class="form-check">
+              <input class="form-check-input motor-checkbox" type="checkbox" id="motor${idx}" value="${motor}" ${idx < 2 ? 'checked' : ''}>
+              <label class="form-check-label" for="motor${idx}">${motor}</label>
+            </div>
+          </a></li>`;
+        });
+        dropdownContent.innerHTML = html;
+      }
+
+      // Hàm lấy danh sách motor được chọn
+      function getSelectedMotors() {
+        const checkboxes = document.querySelectorAll('input.motor-checkbox');
+        const selectedMotors = [];
+        checkboxes.forEach(checkbox => {
+          if (checkbox.checked) {
+            selectedMotors.push(checkbox.value);
+          }
+        });
+        return selectedMotors;
+      }
+
+      // Khởi tạo Chart.js với canvas element
+      const ctx = document.getElementById("myChart").getContext("2d");
+      const chart = new Chart(ctx, {
+        type: "line", // Loại biểu đồ: đường
+        data: {
+          labels: [], // Nhãn trục x (thời gian)
+          datasets: [], // Mảng datasets rỗng - sẽ được tạo động
+        },
+        options: {
+          animation: false, // Tắt animation để tăng hiệu suất
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Time (second)", // Tiêu đề trục x
+                font: { weight: "bold" },
+              },
+              ticks: {
+                font: {
+                  size: 14, // Kích thước font cho nhãn
+                },
+                autoSkip: false, // Không tự động bỏ qua nhãn
+                maxTicksLimit: 10, // Giới hạn số nhãn hiển thị
+                // Callback để hiển thị nhãn dựa trên update period và duration
+                callback: function (value, index, ticks) {
+                  const label = this.getLabelForValue(value);
+                  const updatePeriod = parseInt(document.getElementById("updatePeriod").value);
+                  const duration = parseInt(document.getElementById("duration").value);
+                  
+                  // Debug: log để kiểm tra
+                  console.log("Tick label:", label, "Update period:", updatePeriod, "Duration:", duration);
+                  
+                  // Logic hiển thị nhãn dựa trên update period và duration
+                  if (updatePeriod === 1) {
+                    if (duration === 1) {
+                      // 1s + 1 phút: hiển thị mỗi 10 giây
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        console.log("1s+1min - Seconds:", secondsInt, "Mod 10:", secondsInt % 10);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      // 1s + 5 phút: hiển thị mỗi 30 giây
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 5) {
+                    if (duration === 1) {
+                      // 5s + 1 phút: hiển thị mỗi 10 giây
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 10 === 0) return label;
+                      }
+                    } else {
+                      // 5s + 5 phút: hiển thị mỗi 30 giây
+                      const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    return "";
+                  } else if (updatePeriod === 10) {
+                    // 10s: hiển thị mỗi 10 giây
+                    if(duration == 1){
+                    const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        if (parseInt(seconds) % 10 === 0) return label;
+                      }
+                    } else  {
+                       const parts = label.split(":");
+                      if (parts.length >= 3) {
+                        let seconds = parts[2];
+                        if (seconds.includes(" ")) seconds = seconds.split(" ")[0];
+                        const secondsInt = parseInt(seconds);
+                        if (secondsInt % 30 === 0) return label;
+                      }
+                    }
+                    
+                    return "";
+                  }
+                  
+                  return label; // Fallback: hiển thị tất cả
+                },
+              },
+              grid: {
+                display: false, // Ẩn grid mặc định của Chart.js
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Motor Speed (rpm)", // Tiêu đề trục y
+                font: {
+                  weight: "bold",
+                },
+              },
+              ticks: {
+                maxTicksLimit: 10, // Giới hạn số nhãn trên trục y
+                font: {
+                  weight: "regular",
+                },
+                stepSize: 10, // Khoảng cách giữa các nhãn
+              },
+              beginAtZero: false, // Không bắt đầu từ 0
+              min: 0, // Giá trị tối thiểu
+              max: 1000, // Giá trị tối đa
+            },
+          },
+          plugins: {
+            legend: { position: "top" }, // Vị trí chú thích
+            title: {
+              display: true,
+              text: "Motor Chart", // Tiêu đề biểu đồ
+              font: {
+                size: 24,
+              },
+            },
+          },
+        },
+        // Plugin tùy chỉnh để vẽ grid và ticks theo ý muốn
+        plugins: [
+          {
+            id: "customTicks",
+            afterDraw(chart) {
+              const ctx = chart.ctx;
+              const xAxis = chart.scales.x;
+              const yBottom = chart.chartArea.bottom;
+              const yTop = chart.chartArea.top;
+
+              // Duyệt qua tất cả các ticks trên trục x
+              xAxis.ticks.forEach((tick, i) => {
+                const x = xAxis.getPixelForTick(i);
+                const label = xAxis.getLabelForValue(tick.value);
+                const updatePeriod = parseInt(document.getElementById("updatePeriod").value);
+                
+                // Debug: log để kiểm tra
+                console.log("Plugin - Tick label:", label, "Update period:", updatePeriod);
+                
+                // Logic xác định major tick dựa trên update period và duration
+                let isMajor = false;
+                const duration = parseInt(document.getElementById("duration").value);
+                
+                if (updatePeriod === 1) {
+                  if (duration === 1) {
+                    // 1s + 1 phút: major tick ở giây chia hết cho 10
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 10 === 0;
+                    }
+                  } else {
+                    // 1s + 5 phút: major tick ở giây chia hết cho 30
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 5) {
+                  if (duration === 1) {
+                    // 5s + 1 phút: major tick ở giây chia hết cho 15
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 15 === 0;
+                    }
+                  } else {
+                    // 5s + 5 phút: major tick ở giây chia hết cho 30
+                    const parts = label.split(":");
+                    if (parts.length >= 3) {
+                      let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                      isMajor = seconds && parseInt(seconds) % 30 === 0;
+                    }
+                  }
+                } else if (updatePeriod === 10) {
+                  // 10s: major tick ở giây chia hết cho 30
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) % 30 === 0;
+                  }
+                } else if (updatePeriod === 20) {
+                  // 20s: major tick ở giây = 0 (đầu phút)
+                  const parts = label.split(":");
+                  if (parts.length >= 3) {
+                    let seconds = parts[2] ? parts[2].split(" ")[0] : null;
+                    isMajor = seconds && parseInt(seconds) === 0;
+                  }
+                } else if (updatePeriod === 30) {
+                  // 30s: major tick ở phút chia hết cho 2
+                  const parts = label.split(":");
+                  if (parts.length >= 2) {
+                    let minutes = parts[1] ? parts[1].split(" ")[0] : null;
+                    isMajor = minutes && parseInt(minutes) % 2 === 0;
+                  }
+                } else if (updatePeriod === 60) {
+                  // 60s: major tick ở phút chia hết cho 5
+                  const parts = label.split(":");
+                  if (parts.length >= 2) {
+                    let minutes = parts[1] ? parts[1].split(" ")[0] : null;
+                    isMajor = minutes && parseInt(minutes) % 5 === 0;
+                  }
+                }
+
+                if (isMajor) {
+                  // 1. Vẽ vạch nhỏ phía dưới trục cho các mốc chính
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 13); // Độ dài tick = 13px
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+
+                  // 2. Vẽ đường grid kéo dài toàn chiều cao cho các mốc chính
+                  ctx.beginPath();
+                  ctx.moveTo(x, yTop);
+                  ctx.lineTo(x, yBottom);
+                  ctx.strokeStyle = "rgba(0,0,0,0.2)"; // Màu grid mờ
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                } else {
+                  // Vẽ tick ngắn hơn cho các mốc khác
+                  ctx.beginPath();
+                  ctx.moveTo(x, yBottom);
+                  ctx.lineTo(x, yBottom + 6); // Độ dài tick = 6px
+                  ctx.strokeStyle = "#000";
+                  ctx.lineWidth = 1;
+                  ctx.stroke();
+                }
+              });
+            },
+          },
+        ],
+      });
+
+      // Buffer dữ liệu
+      let sampleSize = 60; // Mặc định 1 phút (60 giây)
+      let timeStamps = []; // Mảng thời gian
+      let dataSeries = {}; // Mảng dữ liệu động cho tất cả motor
+
+      // Lưu trữ dữ liệu mới nhất từ socket
+      let latestSocketData = {};
+
+      // Hàm khởi tạo dataSeries và latestSocketData động
+      function initializeDataStructures(motorList) {
+        dataSeries = {};
+        latestSocketData = {};
+        motorList.forEach(motor => {
+          dataSeries[motor] = [];
+          latestSocketData[motor] = { Speed: 0, timestamp: null };
+        });
+      }
+
+      // Lấy các element DOM để thao tác
+      const durationSelect = document.getElementById("duration");
+      const updatePeriodSelect = document.getElementById("updatePeriod");
+      const timeRemaining = document.getElementById("timeRemaining");
+
+      // Hàm lấy danh sách motor được chọn
+      function getSelectedMotors() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][value^="MOTOR_"]');
+        const selectedMotors = [];
+        checkboxes.forEach(checkbox => {
+          if (checkbox.checked) {
+            selectedMotors.push(checkbox.value);
+          }
+        });
+        return selectedMotors;
+      }
+
+      // Hàm lấy dữ liệu lịch sử từ API
+      async function fetchHistoricalData(minutes, motor) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/chart/api/motor-speed/${minutes}?motors=${motor}`
+          );
+          const data = await response.json();
+          // Chuyển đổi dữ liệu về định dạng cần thiết
+          return data.map((item) => ({
+            timestamp: new Date(item.timestamp).toLocaleTimeString("vi-VN"),
+            speed: item.speed,
+          }));
+        } catch (error) {
+          console.error("Error fetching historical data:", error);
+          return [];
+        }
+      }
+
+      // Hàm tạo mảng thời gian đều đặn theo update period
+      function generateTimeSeries(start, end, updatePeriod) {
+        const result = [];
+        let current = new Date(start);
+        
+        // Điều chỉnh thời gian bắt đầu để phù hợp với update period
+        const currentSeconds = current.getSeconds();
+        const adjustedSeconds = Math.floor(currentSeconds / updatePeriod) * updatePeriod;
+        current.setSeconds(adjustedSeconds, 0, 0); // Reset về giây 0, millisecond 0
+        
+        while (current <= end) {
+          result.push(current.toLocaleTimeString("vi-VN"));
+          current = new Date(current.getTime() + updatePeriod * 1000);
+        }
+        return result;
+      }
+
+      // Hàm lấp giá trị trung bình vào các điểm thiếu
+      function fillMissingData(timeSeries, data) {
+        const speedMap = {};
+        // Tạo map từ timestamp sang speed để tìm kiếm nhanh
+        data.forEach((item) => (speedMap[item.timestamp] = item.speed));
+        const filled = [];
+        
+        for (let i = 0; i < timeSeries.length; i++) {
+          const t = timeSeries[i];
+          if (speedMap[t] !== undefined) {
+            // Nếu có dữ liệu, sử dụng trực tiếp
+            filled.push(speedMap[t]);
+          } else {
+            // Nếu không có dữ liệu, tìm giá trị trước và sau để nội suy
+            let prev = null,
+              next = null;
+            // Tìm giá trị trước đó
+            for (let j = i - 1; j >= 0; j--) {
+              if (speedMap[timeSeries[j]] !== undefined) {
+                prev = speedMap[timeSeries[j]];
+                break;
+              }
+            }
+            // Tìm giá trị sau đó
+            for (let j = i + 1; j < timeSeries.length; j++) {
+              if (speedMap[timeSeries[j]] !== undefined) {
+                next = speedMap[timeSeries[j]];
+                break;
+              }
+            }
+            // Tính trung bình nếu có cả 2, còn không thì lấy giá trị gần nhất
+            if (prev !== null && next !== null) {
+              filled.push((prev + next) / 2); // Nội suy tuyến tính
+            } else if (prev !== null) {
+              filled.push(prev); // Lấy giá trị trước
+            } else if (next !== null) {
+              filled.push(next); // Lấy giá trị sau
+            } else {
+              filled.push(null); // Không có dữ liệu
+            }
+          }
+        }
+        return filled;
+      }
+
+      // Hàm tạo datasets động cho Chart.js
+      function createDatasets(motorList) {
+        const colorList = [
+          '#FF0000', '#00CC00', '#0000FF', '#FF00FF', '#FFA500', '#00CED1', '#FFD700', '#8A2BE2', '#FF6347', '#008B8B',
+          '#DC143C', '#20B2AA', '#FF1493', '#7FFF00', '#1E90FF', '#B22222', '#00FF7F', '#4682B4', '#A0522D', '#C71585'
+        ];
+        return motorList.map((motor, idx) => ({
+          label: motor,
+          data: [],
+          borderColor: colorList[idx % colorList.length],
+          backgroundColor: colorList[idx % colorList.length] + '33',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1,
+        }));
+      }
+
+      // Sửa lại initializeChart để fetch lịch sử cho các motor động
+      async function initializeChart() {
+        const minutes = parseInt(durationSelect.value);
+        const updatePeriod = parseInt(updatePeriodSelect.value);
+        sampleSize = minutes * 60;
+        const selectedMotors = getSelectedMotors();
+
+        // Xóa dữ liệu cũ hoàn toàn
+        timeStamps = [];
+        selectedMotors.forEach(motor => {
+          if (dataSeries[motor]) {
+            dataSeries[motor] = [];
+          }
+        });
+
+        // Lấy thời gian bắt đầu và kết thúc
+        const endTime = new Date();
+        const startTime = new Date(endTime.getTime() - sampleSize * 1000);
+        timeStamps = generateTimeSeries(startTime, endTime, updatePeriod);
+
+        // Lấy dữ liệu lịch sử cho tất cả motor được chọn
+        for (const motor of selectedMotors) {
+          const data = await fetchHistoricalData(minutes, motor);
+          dataSeries[motor] = fillMissingData(timeStamps, data);
+        }
+
+        // Đảm bảo đồng bộ số lượng điểm
+        chart.data.labels = timeStamps;
+        // Tạo lại datasets động cho các motor được chọn
+        chart.data.datasets = createDatasets(selectedMotors).map((dataset, idx) => ({
+          ...dataset,
+          data: dataSeries[dataset.label] ? dataSeries[dataset.label].slice(0, timeStamps.length) : [],
+        }));
+        chart.update();
+      }
+
+      // Cập nhật biểu đồ với dữ liệu từ socket
+      function updateChartWithSocketData() {
+        const selectedMotors = getSelectedMotors();
+        const updatePeriod = parseInt(updatePeriodSelect.value);
+        const minutes = parseInt(durationSelect.value);
+        const sampleSize = Math.floor((minutes * 60) / updatePeriod);
+        const currentTime = new Date().toLocaleTimeString("vi-VN");
+
+        for (const selectedMotor of selectedMotors) {
+          let speedValue;
+          if (
+            latestSocketData[selectedMotor] &&
+            latestSocketData[selectedMotor].timestamp &&
+            (!lastSocketTimestamps[selectedMotor] || lastSocketTimestamps[selectedMotor] !== latestSocketData[selectedMotor].timestamp)
+          ) {
+            speedValue = latestSocketData[selectedMotor].Speed;
+            lastSocketTimestamps[selectedMotor] = latestSocketData[selectedMotor].timestamp;
+          } else {
+            // Nếu không có dữ liệu mới, giữ lại giá trị cuối cùng
+            speedValue = dataSeries[selectedMotor] && dataSeries[selectedMotor].length > 0
+              ? dataSeries[selectedMotor][dataSeries[selectedMotor].length - 1]
+              : 0;
+          }
+
+          if (!dataSeries[selectedMotor]) dataSeries[selectedMotor] = [];
+          if (dataSeries[selectedMotor].length >= sampleSize) {
+            dataSeries[selectedMotor].shift();
+          }
+          dataSeries[selectedMotor].push(speedValue);
+        }
+
+        if (timeStamps.length >= sampleSize) {
+          timeStamps.shift();
+        }
+        timeStamps.push(currentTime);
+
+        chart.data.labels = timeStamps;
+        // Tạo lại datasets động cho các motor được chọn
+        chart.data.datasets = createDatasets(selectedMotors).map((dataset, idx) => ({
+          ...dataset,
+          data: dataSeries[dataset.label] ? dataSeries[dataset.label].slice(0, timeStamps.length) : [],
+        }));
+        chart.update();
+      }
+
+      // Socket.IO event listeners
+      socket.on('connect', () => {
+        console.log('Connected to server via Socket.IO');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+
+      // Khi nhận được dữ liệu từ Socket.IO, luôn tạo lại datasets động
+      let firstSocketData = true;
+      let lastSocketTimestamps = {};
+      socket.on('socketPackages', (data) => {
+        console.log('SOCKET DATA:', data);
+        if (data.MOTORS) {
+          const motorList = Object.keys(data.MOTORS);
+          
+          // Nếu là lần đầu hoặc danh sách motor thay đổi, tạo lại datasets
+          if (firstSocketData || JSON.stringify(allMotors) !== JSON.stringify(motorList)) {
+            allMotors = motorList;
+            initializeDataStructures(allMotors);
+            renderMotorCheckboxes(allMotors);
+            attachMotorCheckboxListeners();
+            setupMotorDropdown(); // Thiết lập lại dropdown sau khi render
+            // Luôn tạo lại datasets động bằng hàm createDatasets
+            chart.data.datasets = createDatasets(allMotors);
+            firstSocketData = false;
+            initializeChart();
+          }
+          
+          const now = Date.now();
+          for (const [motorName, motorData] of Object.entries(data.MOTORS)) {
+            if (latestSocketData[motorName]) {
+              latestSocketData[motorName] = {
+                Speed: motorData.Speed, // LUÔN lấy giá trị thực tế, kể cả 0
+                timestamp: now
+              };
+            }
+          }
+        }
+      });
+
+      // Timer cho cập nhật realtime - Timer chạy liên tục mỗi giây
+      let timeLeft = parseInt(updatePeriodSelect.value);
+      let timerInterval = null;
+      timeRemaining.textContent = timeLeft;
+
+      // Hàm tick timer - chạy mỗi giây
+      function timerTick() {
+        timeLeft--;
+        timeRemaining.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          // Cập nhật biểu đồ ngay lập tức
+          updateChartWithSocketData();
+          // Reset timer ngay lập tức
+          timeLeft = parseInt(updatePeriodSelect.value);
+          timeRemaining.textContent = timeLeft;
+        }
+      }
+
+      // Hàm bắt đầu timer
+      function startTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+        timeLeft = parseInt(updatePeriodSelect.value);
+        timeRemaining.textContent = timeLeft;
+        timerInterval = setInterval(timerTick, 1000);
+      }
+
+      // Event listeners cho các controls
+      durationSelect.addEventListener("change", () => {
+        initializeChart().then(() => {
+          startTimer(); // Luôn restart timer khi đổi duration
+        });
+      });
+      updatePeriodSelect.addEventListener("change", () => {
+        initializeChart().then(() => {
+          startTimer(); // Luôn restart timer khi đổi update period
+        });
+      });
+      // Event listeners cho checkbox motor
+      function attachMotorCheckboxListeners() {
+        const checkboxes = document.querySelectorAll('input.motor-checkbox');
+        checkboxes.forEach(checkbox => {
+          checkbox.addEventListener("change", () => {
+            initializeChart().then(() => {
+              startTimer(); // Luôn restart timer khi đổi motor
+            });
+          });
+        });
+      }
+      
+      // Xử lý dropdown motor - Bootstrap sẽ tự động xử lý dropdown
+      function setupMotorDropdown() {
+        // Bootstrap dropdown tự động xử lý việc mở/đóng
+        // Chỉ cần đảm bảo event listeners cho checkbox hoạt động
+        const dropdownContent = document.getElementById('motorDropdownContent');
+        
+        // Ngăn dropdown đóng khi click vào checkbox
+        dropdownContent.addEventListener('click', (e) => {
+          if (e.target.classList.contains('motor-checkbox') || e.target.classList.contains('form-check-label')) {
+            e.stopPropagation();
+          }
+        });
+      }
+      // Khi load trang lần đầu
+      window.addEventListener('DOMContentLoaded', () => {
+        setupMotorDropdown(); // Thiết lập dropdown motor
+        initializeChart().then(() => {
+          startTimer();
+        });
+      });
+    </script>
+  </body>
+</html>
+
+

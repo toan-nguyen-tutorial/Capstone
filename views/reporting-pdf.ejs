@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Performance Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #0056b3;
+        }
+        .header p {
+            margin: 5px 0 0;
+            font-size: 14px;
+        }
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        .section h2 {
+            font-size: 20px;
+            color: #0056b3;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .chart-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .summary-table th, .summary-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .summary-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        .chart-row-flex {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2%;
+            margin-bottom: 20px;
+        }
+        .chart-row-flex .chart-container {
+            margin-bottom: 0;
+        }
+        .summary-table-break {
+            page-break-before: always;
+            margin-top: 0;
+        }
+        .summary-table-title {
+            page-break-before: always;
+            margin-top: 40px;
+            margin-bottom: 0;
+        }
+        .summary-table-break {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>HVAC Performance Report</h1>
+        <p>Date Generated: <%= new Date().toLocaleDateString('en-US') %></p>
+        <p>Period: <%= startDate %> to <%= endDate %></p>
+    </div>
+
+    <div class="section">
+        <% if (charts.motorDailyChart || charts.valveDailyChart || charts.damperDailyChart) { %>
+            <h2>
+                <% if (charts.motorDailyChart) { %>Motor Runtime Analysis<% } %>
+                <% if (charts.valveDailyChart) { %>Valve Open Time Analysis<% } %>
+                <% if (charts.damperDailyChart) { %>Damper Open Time Analysis<% } %>
+            </h2>
+        <% } %>
+        <% if (charts.motorDailyChart) { %>
+            <div class="chart-container">
+                <h3>Daily Runtime Comparison</h3>
+                <img src="<%= charts.motorDailyChart %>" alt="Motor Daily Runtime Chart">
+            </div>
+        <% } %>
+        <% if (charts.valveDailyChart) { %>
+            <div class="chart-container">
+                <h3>Daily Open Time Comparison</h3>
+                <img src="<%= charts.valveDailyChart %>" alt="Valve Daily Open Time Chart">
+            </div>
+        <% } %>
+        <% if (charts.damperDailyChart) { %>
+            <div class="chart-container">
+                <h3>Daily Open Time Comparison</h3>
+                <img src="<%= charts.damperDailyChart %>" alt="Damper Daily Open Time Chart">
+            </div>
+        <% } %>
+        <% if (charts.motorComparisonChart) { %>
+            <div class="chart-container">
+                <h3>Motor Runtime Comparison (Total Hours)</h3>
+                <img src="<%= charts.motorComparisonChart %>" alt="Motor Comparison Chart">
+            </div>
+        <% } %>
+        <% if (charts.valveComparisonChart) { %>
+            <div class="chart-container">
+                <h3>Valve Comparison (Total Open Hours)</h3>
+                <img src="<%= charts.valveComparisonChart %>" alt="Valve Comparison Chart">
+            </div>
+        <% } %>
+        <% if (charts.damperComparisonChart) { %>
+            <div class="chart-container">
+                <h3>Damper Comparison (Total Open Hours)</h3>
+                <img src="<%= charts.damperComparisonChart %>" alt="Damper Comparison Chart">
+            </div>
+        <% } %>
+        <div class="chart-row-flex">
+            <div class="chart-container" style="width:48%;display:inline-block;vertical-align:top;">
+                <h3>Current Motor Status Ratio</h3>
+                <% if (charts.motorStatusPieChart) { %>
+                    <img src="<%= charts.motorStatusPieChart %>" alt="Motor Status Pie Chart">
+                <% } else { %>
+                    <p>No data available for this chart.</p>
+                <% } %>
+            </div>
+            <div class="chart-container" style="width:48%;display:inline-block;vertical-align:top;">
+                <h3>Total Runtime Ratio by Device Group</h3>
+                <% if (charts.totalRuntimePieChart) { %>
+                    <img src="<%= charts.totalRuntimePieChart %>" alt="Total Runtime Pie Chart">
+                <% } else { %>
+                    <p>No data available for this chart.</p>
+                <% } %>
+            </div>
+        </div>
+        <% if (summary && summary.motors) { %>
+            <div>
+                <div class="summary-table-title"><h3>Summary Table</h3></div>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Total Hours</th>
+                            <th>Efficiency (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% summary.motors
+                            .slice()
+                            .sort((a, b) => {
+                                // Extract number from name (e.g., MOTOR_1, Valve_5, Damper_2)
+                                const getNum = name => parseInt((name.match(/\d+/) || [0])[0], 10);
+                                return getNum(a.motorName || a.valveName || a.damperName) - getNum(b.motorName || b.valveName || b.damperName);
+                            })
+                            .forEach(item => { %>
+                            <tr>
+                                <td><%= item.motorName || item.valveName || item.damperName %></td>
+                                <td><%= item.operatingHours || item.openHours %></td>
+                                <td><%= item.efficiency %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+    
+</body>
+</html> 

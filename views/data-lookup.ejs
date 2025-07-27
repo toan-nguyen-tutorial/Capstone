@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Lookup - HVAC System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <div class="container py-4">
+        <h2 class="mb-4 text-center">Data Lookup</h2>
+        <div class="card p-4 mb-4 shadow-sm w-100">
+            <div class="card-body">
+                <form id="lookupForm">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="deviceType" class="form-label">Device Type</label>
+                            <select id="deviceType" class="form-select">
+                                <option value="">All</option>
+                                <option value="Motor">Motor</option>
+                                <option value="Valve">Valve</option>
+                                <option value="Damper">Damper</option>
+                                <option value="AHU">AHU</option>
+                                <option value="Chiller">Chiller</option>
+                                <option value="Boiler">Boiler</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="deviceName" class="form-label">Device Name</label>
+                            <span id="deviceNameWrapper">
+                                <input type="text" id="deviceName" class="form-control" placeholder="e.g. MOTOR_1, Valve_5">
+                            </span>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dateFrom" class="form-label">From</label>
+                            <input type="datetime-local" id="dateFrom" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dateTo" class="form-label">To</label>
+                            <input type="datetime-local" id="dateTo" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" id="exportBtn" class="btn btn-success w-100">Export to Excel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="results">
+            <div class="alert alert-info text-center">Please select search criteria and click Search to view data.</div>
+            <!-- Results table will be rendered here by JS in the future -->
+        </div>
+    </div>
+    <footer class="text-center py-3 bg-light mt-5">
+        <small>HVAC Dashboard &copy; 2024</small>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.getElementById('lookupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const deviceType = document.getElementById('deviceType').value;
+    const deviceName = document.getElementById('deviceName').value;
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+
+    try {
+        const res = await fetch('/data-lookup/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deviceType, deviceName, dateFrom, dateTo })
+        });
+        const data = await res.json();
+        const resultsDiv = document.getElementById('results');
+        if (!data.success || !data.data.length) {
+            resultsDiv.innerHTML = '<div class="alert alert-warning text-center">No data found.</div>';
+            return;
+        }
+        // Render table for each type
+        let html = '';
+        function renderTable(headers, rows) {
+            let h = '<table class="table table-bordered"><thead><tr>';
+            headers.forEach(head => h += `<th>${head}</th>`);
+            h += '</tr></thead><tbody>';
+            rows.forEach(row => {
+                h += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>';
+            });
+            h += '</tbody></table>';
+            return h;
+        }
+        // Group by deviceType if searching all
+        let grouped = {};
+        if (!deviceType) {
+            data.data.forEach(row => {
+                const type = row.deviceType || row.name || 'Unknown';
+                if (!grouped[type]) grouped[type] = [];
+                grouped[type].push(row);
+            });
+        } else {
+            grouped[deviceType] = data.data;
+        }
+        for (const [type, rows] of Object.entries(grouped)) {
+            html += `<h5 class='mt-4 mb-2 text-primary'>${type} Logs</h5>`;
+            if (type === 'Motor') {
+                html += renderTable([
+                    'Timestamp','Name','Speed','RunFeedback','Runtime','Fault'
+                ], rows.map(row => [
+                    new Date(row.timestamp).toLocaleString(),
+                    row.name,
+                    row.Speed,
+                    row.RunFeedback,
+                    row.Runtime,
+                    row.Fault
+                ]));
+            } else if (type === 'Valve') {
+                html += renderTable([
+                    'Timestamp','Name','ValvePosition','OpenFeedback','Fault'
+                ], rows.map(row => [
+                    new Date(row.timestamp).toLocaleString(),
+                    row.name,
+                    row.ValvePosition,
+                    row.OpenFeedback,
+                    row.Fault
+                ]));
+            } else if (type === 'Damper') {
+                html += renderTable([
+                    'Timestamp','Name','DamperPosition','OpenFeedback','Fault'
+                ], rows.map(row => [
+                    new Date(row.timestamp).toLocaleString(),
+                    row.name,
+                    row.DamperPosition,
+                    row.OpenFeedback,
+                    row.Fault
+                ]));
+            } else if (type === 'Boiler' || type === 'Chiller' || type === 'AHU') {
+                // Flatten data object
+                const allKeys = Array.from(new Set(rows.flatMap(row => Object.keys(row.data || {}))));
+                html += renderTable([
+                    'Timestamp','Name',...allKeys
+                ], rows.map(row => [
+                    new Date(row.timestamp).toLocaleString(),
+                    row.name,
+                    ...allKeys.map(k => (row.data && row.data[k] !== undefined) ? row.data[k] : '')
+                ]));
+            } else {
+                // Fallback: show all fields
+                html += renderTable(Object.keys(rows[0] || {}), rows.map(row => Object.values(row)));
+            }
+        }
+        resultsDiv.innerHTML = html;
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+document.getElementById('exportBtn').addEventListener('click', async () => {
+    const deviceType = document.getElementById('deviceType').value;
+    const deviceName = document.getElementById('deviceName').value;
+    const from = document.getElementById('dateFrom').value;
+    const to = document.getElementById('dateTo').value;
+
+    try {
+        const res = await fetch('/data-lookup/api/export', {
+            method: 'POST',
+            body: JSON.stringify({ deviceType, deviceName, dateFrom: from, dateTo: to }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            alert('Error exporting data: ' + (errorData.message || 'Server error'));
+            return;
+        }
+
+        const blob = await res.blob();
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        const fileName = `export-${deviceType || 'all'}-${new Date().toISOString().split('T')[0]}.csv`;
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+    } catch (err) {
+        console.error(err);
+        alert('An error occurred while exporting the data.');
+    }
+});
+
+// Device name dynamic select logic
+const deviceTypeSelect = document.getElementById('deviceType');
+const deviceNameWrapper = document.getElementById('deviceNameWrapper');
+let lastDeviceName = '';
+deviceTypeSelect.addEventListener('change', async function() {
+    const type = this.value;
+    lastDeviceName = '';
+    if (!type) {
+        // Nếu chưa chọn device type, dùng input
+        deviceNameWrapper.innerHTML = `<input type="text" id="deviceName" class="form-control" placeholder="e.g. MOTOR_1, Valve_5">`;
+        return;
+    }
+    // Gọi API lấy danh sách tên thiết bị
+    const res = await fetch(`/data-lookup/api/device-names?type=${type}`);
+    const data = await res.json();
+    if (data.success && data.names.length) {
+        let options = data.names.map(n => `<option value="${n}">${n}</option>`).join('');
+        deviceNameWrapper.innerHTML = `<select id="deviceName" class="form-select"><option value="">All</option>${options}</select>`;
+    } else {
+        deviceNameWrapper.innerHTML = `<input type="text" id="deviceName" class="form-control" placeholder="No device found">`;
+    }
+});
+</script>
+</body>
+</html> 
