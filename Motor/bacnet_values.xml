@@ -1,0 +1,203 @@
+<?xml version="1.0" ?>
+<Values>
+    <!-- Set 1 -->
+    <Value>OBJECT_BINARY_VALUE:0</Value>
+    <Value>OBJECT_BINARY_VALUE:1</Value>
+    <Value>OBJECT_BINARY_VALUE:2</Value>
+    <Value>OBJECT_BINARY_VALUE:3</Value>
+    <Value>OBJECT_BINARY_VALUE:4</Value>
+    <Value>OBJECT_BINARY_VALUE:5</Value>
+    <Value>OBJECT_ANALOG_VALUE:0</Value>
+    <Value>OBJECT_ANALOG_VALUE:1</Value>
+    <Value>OBJECT_DATETIME_VALUE:0</Value>
+    <!-- Set 2 -->
+    <Value>OBJECT_BINARY_VALUE:6</Value>
+    <Value>OBJECT_BINARY_VALUE:7</Value>
+    <Value>OBJECT_BINARY_VALUE:8</Value>
+    <Value>OBJECT_BINARY_VALUE:9</Value>
+    <Value>OBJECT_BINARY_VALUE:10</Value>
+    <Value>OBJECT_BINARY_VALUE:11</Value>
+    <Value>OBJECT_ANALOG_VALUE:2</Value>
+    <Value>OBJECT_ANALOG_VALUE:3</Value>
+    <Value>OBJECT_DATETIME_VALUE:1</Value>
+    <!-- Set 3 -->
+    <Value>OBJECT_BINARY_VALUE:12</Value>
+    <Value>OBJECT_BINARY_VALUE:13</Value>
+    <Value>OBJECT_BINARY_VALUE:14</Value>
+    <Value>OBJECT_BINARY_VALUE:15</Value>
+    <Value>OBJECT_BINARY_VALUE:16</Value>
+    <Value>OBJECT_BINARY_VALUE:17</Value>
+    <Value>OBJECT_ANALOG_VALUE:4</Value>
+    <Value>OBJECT_ANALOG_VALUE:5</Value>
+    <Value>OBJECT_DATETIME_VALUE:2</Value>
+    <!-- Set 4 -->
+    <Value>OBJECT_BINARY_VALUE:18</Value>
+    <Value>OBJECT_BINARY_VALUE:19</Value>
+    <Value>OBJECT_BINARY_VALUE:20</Value>
+    <Value>OBJECT_BINARY_VALUE:21</Value>
+    <Value>OBJECT_BINARY_VALUE:22</Value>
+    <Value>OBJECT_BINARY_VALUE:23</Value>
+    <Value>OBJECT_ANALOG_VALUE:6</Value>
+    <Value>OBJECT_ANALOG_VALUE:7</Value>
+    <Value>OBJECT_DATETIME_VALUE:3</Value>
+    <!-- Set 5 -->
+    <Value>OBJECT_BINARY_VALUE:24</Value>
+    <Value>OBJECT_BINARY_VALUE:25</Value>
+    <Value>OBJECT_BINARY_VALUE:26</Value>
+    <Value>OBJECT_BINARY_VALUE:27</Value>
+    <Value>OBJECT_BINARY_VALUE:28</Value>
+    <Value>OBJECT_BINARY_VALUE:29</Value>
+    <Value>OBJECT_ANALOG_VALUE:8</Value>
+    <Value>OBJECT_ANALOG_VALUE:9</Value>
+    <Value>OBJECT_DATETIME_VALUE:4</Value>
+    <!-- Set 6 -->
+    <Value>OBJECT_BINARY_VALUE:30</Value>
+    <Value>OBJECT_BINARY_VALUE:31</Value>
+    <Value>OBJECT_BINARY_VALUE:32</Value>
+    <Value>OBJECT_BINARY_VALUE:33</Value>
+    <Value>OBJECT_BINARY_VALUE:34</Value>
+    <Value>OBJECT_BINARY_VALUE:35</Value>
+    <Value>OBJECT_ANALOG_VALUE:10</Value>
+    <Value>OBJECT_ANALOG_VALUE:11</Value>
+    <Value>OBJECT_DATETIME_VALUE:5</Value>
+    <!-- Set 7 -->
+    <Value>OBJECT_BINARY_VALUE:36</Value>
+    <Value>OBJECT_BINARY_VALUE:37</Value>
+    <Value>OBJECT_BINARY_VALUE:38</Value>
+    <Value>OBJECT_BINARY_VALUE:39</Value>
+    <Value>OBJECT_BINARY_VALUE:40</Value>
+    <Value>OBJECT_BINARY_VALUE:41</Value>
+    <Value>OBJECT_ANALOG_VALUE:12</Value>
+    <Value>OBJECT_ANALOG_VALUE:13</Value>
+    <Value>OBJECT_DATETIME_VALUE:6</Value>
+    <!-- Set 8 -->
+    <Value>OBJECT_BINARY_VALUE:42</Value>
+    <Value>OBJECT_BINARY_VALUE:43</Value>
+    <Value>OBJECT_BINARY_VALUE:44</Value>
+    <Value>OBJECT_BINARY_VALUE:45</Value>
+    <Value>OBJECT_BINARY_VALUE:46</Value>
+    <Value>OBJECT_BINARY_VALUE:47</Value>
+    <Value>OBJECT_ANALOG_VALUE:14</Value>
+    <Value>OBJECT_ANALOG_VALUE:15</Value>
+    <Value>OBJECT_DATETIME_VALUE:7</Value>
+    <!-- Set 9 -->
+    <Value>OBJECT_BINARY_VALUE:48</Value>
+    <Value>OBJECT_BINARY_VALUE:49</Value>
+    <Value>OBJECT_BINARY_VALUE:50</Value>
+    <Value>OBJECT_BINARY_VALUE:51</Value>
+    <Value>OBJECT_BINARY_VALUE:52</Value>
+    <Value>OBJECT_BINARY_VALUE:53</Value>
+    <Value>OBJECT_ANALOG_VALUE:16</Value>
+    <Value>OBJECT_ANALOG_VALUE:17</Value>
+    <Value>OBJECT_DATETIME_VALUE:8</Value>
+    <!-- Set 10 -->
+    <Value>OBJECT_BINARY_VALUE:54</Value>
+    <Value>OBJECT_BINARY_VALUE:55</Value>
+    <Value>OBJECT_BINARY_VALUE:56</Value>
+    <Value>OBJECT_BINARY_VALUE:57</Value>
+    <Value>OBJECT_BINARY_VALUE:58</Value>
+    <Value>OBJECT_BINARY_VALUE:59</Value>
+    <Value>OBJECT_ANALOG_VALUE:18</Value>
+    <Value>OBJECT_ANALOG_VALUE:19</Value>
+    <Value>OBJECT_DATETIME_VALUE:9</Value>
+    <!-- Set 11 -->
+    <Value>OBJECT_BINARY_VALUE:60</Value>
+    <Value>OBJECT_BINARY_VALUE:61</Value>
+    <Value>OBJECT_BINARY_VALUE:62</Value>
+    <Value>OBJECT_BINARY_VALUE:63</Value>
+    <Value>OBJECT_BINARY_VALUE:64</Value>
+    <Value>OBJECT_BINARY_VALUE:65</Value>
+    <Value>OBJECT_ANALOG_VALUE:20</Value>
+    <Value>OBJECT_ANALOG_VALUE:21</Value>
+    <Value>OBJECT_DATETIME_VALUE:10</Value>
+    <!-- Set 12 -->
+    <Value>OBJECT_BINARY_VALUE:66</Value>
+    <Value>OBJECT_BINARY_VALUE:67</Value>
+    <Value>OBJECT_BINARY_VALUE:68</Value>
+    <Value>OBJECT_BINARY_VALUE:69</Value>
+    <Value>OBJECT_BINARY_VALUE:70</Value>
+    <Value>OBJECT_BINARY_VALUE:71</Value>
+    <Value>OBJECT_ANALOG_VALUE:22</Value>
+    <Value>OBJECT_ANALOG_VALUE:23</Value>
+    <Value>OBJECT_DATETIME_VALUE:11</Value>
+    <!-- Set 13 -->
+    <Value>OBJECT_BINARY_VALUE:72</Value>
+    <Value>OBJECT_BINARY_VALUE:73</Value>
+    <Value>OBJECT_BINARY_VALUE:74</Value>
+    <Value>OBJECT_BINARY_VALUE:75</Value>
+    <Value>OBJECT_BINARY_VALUE:76</Value>
+    <Value>OBJECT_BINARY_VALUE:77</Value>
+    <Value>OBJECT_ANALOG_VALUE:24</Value>
+    <Value>OBJECT_ANALOG_VALUE:25</Value>
+    <Value>OBJECT_DATETIME_VALUE:12</Value>
+    <!-- Set 14 -->
+    <Value>OBJECT_BINARY_VALUE:78</Value>
+    <Value>OBJECT_BINARY_VALUE:79</Value>
+    <Value>OBJECT_BINARY_VALUE:80</Value>
+    <Value>OBJECT_BINARY_VALUE:81</Value>
+    <Value>OBJECT_BINARY_VALUE:82</Value>
+    <Value>OBJECT_BINARY_VALUE:83</Value>
+    <Value>OBJECT_ANALOG_VALUE:26</Value>
+    <Value>OBJECT_ANALOG_VALUE:27</Value>
+    <Value>OBJECT_DATETIME_VALUE:13</Value>
+    <!-- Set 15 -->
+    <Value>OBJECT_BINARY_VALUE:84</Value>
+    <Value>OBJECT_BINARY_VALUE:85</Value>
+    <Value>OBJECT_BINARY_VALUE:86</Value>
+    <Value>OBJECT_BINARY_VALUE:87</Value>
+    <Value>OBJECT_BINARY_VALUE:88</Value>
+    <Value>OBJECT_BINARY_VALUE:89</Value>
+    <Value>OBJECT_ANALOG_VALUE:28</Value>
+    <Value>OBJECT_ANALOG_VALUE:29</Value>
+    <Value>OBJECT_DATETIME_VALUE:14</Value>
+    <!-- Set 16 -->
+    <Value>OBJECT_BINARY_VALUE:90</Value>
+    <Value>OBJECT_BINARY_VALUE:91</Value>
+    <Value>OBJECT_BINARY_VALUE:92</Value>
+    <Value>OBJECT_BINARY_VALUE:93</Value>
+    <Value>OBJECT_BINARY_VALUE:94</Value>
+    <Value>OBJECT_BINARY_VALUE:95</Value>
+    <Value>OBJECT_ANALOG_VALUE:30</Value>
+    <Value>OBJECT_ANALOG_VALUE:31</Value>
+    <Value>OBJECT_DATETIME_VALUE:15</Value>
+    <!-- Set 17 -->
+    <Value>OBJECT_BINARY_VALUE:96</Value>
+    <Value>OBJECT_BINARY_VALUE:97</Value>
+    <Value>OBJECT_BINARY_VALUE:98</Value>
+    <Value>OBJECT_BINARY_VALUE:99</Value>
+    <Value>OBJECT_BINARY_VALUE:100</Value>
+    <Value>OBJECT_BINARY_VALUE:101</Value>
+    <Value>OBJECT_ANALOG_VALUE:32</Value>
+    <Value>OBJECT_ANALOG_VALUE:33</Value>
+    <Value>OBJECT_DATETIME_VALUE:16</Value>
+    <!-- Set 18 -->
+    <Value>OBJECT_BINARY_VALUE:102</Value>
+    <Value>OBJECT_BINARY_VALUE:103</Value>
+    <Value>OBJECT_BINARY_VALUE:104</Value>
+    <Value>OBJECT_BINARY_VALUE:105</Value>
+    <Value>OBJECT_BINARY_VALUE:106</Value>
+    <Value>OBJECT_BINARY_VALUE:107</Value>
+    <Value>OBJECT_ANALOG_VALUE:34</Value>
+    <Value>OBJECT_ANALOG_VALUE:35</Value>
+    <Value>OBJECT_DATETIME_VALUE:17</Value>
+    <!-- Set 19 -->
+    <Value>OBJECT_BINARY_VALUE:108</Value>
+    <Value>OBJECT_BINARY_VALUE:109</Value>
+    <Value>OBJECT_BINARY_VALUE:110</Value>
+    <Value>OBJECT_BINARY_VALUE:111</Value>
+    <Value>OBJECT_BINARY_VALUE:112</Value>
+    <Value>OBJECT_BINARY_VALUE:113</Value>
+    <Value>OBJECT_ANALOG_VALUE:36</Value>
+    <Value>OBJECT_ANALOG_VALUE:37</Value>
+    <Value>OBJECT_DATETIME_VALUE:18</Value>
+    <!-- Set 20 -->
+    <Value>OBJECT_BINARY_VALUE:114</Value>
+    <Value>OBJECT_BINARY_VALUE:115</Value>
+    <Value>OBJECT_BINARY_VALUE:116</Value>
+    <Value>OBJECT_BINARY_VALUE:117</Value>
+    <Value>OBJECT_BINARY_VALUE:118</Value>
+    <Value>OBJECT_BINARY_VALUE:119</Value>
+    <Value>OBJECT_ANALOG_VALUE:38</Value>
+    <Value>OBJECT_ANALOG_VALUE:39</Value>
+    <Value>OBJECT_DATETIME_VALUE:19</Value>
+</Values>

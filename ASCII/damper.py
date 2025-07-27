@@ -1,0 +1,217 @@
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox, scrolledtext
+import re
+
+class DamperAsciiGenerator:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Damper ASCII Generator")
+        self.root.geometry("600x450")
+        self.root.configure(bg="#e6f3fa")  # Light blue background
+
+        # Variables
+        self.file_path = tk.StringVar()
+        self.damper_count = 5  # Fixed to 5 dampers
+        self.status_text = tk.StringVar(value="Welcome! Select a template file to generate 5 dampers.")
+
+        # Style configuration
+        style = ttk.Style()
+        style.configure("TButton", font=("Arial", 11), padding=8)
+        style.configure("TLabel", font=("Arial", 11), background="#e6f3fa")
+        style.configure("TEntry", font=("Arial", 11))
+        style.configure("Accent.TButton", background="#2196F3", foreground="white", font=("Arial", 11, "bold"))
+
+        # Main frame
+        main_frame = ttk.Frame(self.root, padding="30")
+        main_frame.grid(row=0, column=0, sticky="nsew")
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        # Title
+        ttk.Label(main_frame, text="Damper ASCII File Generator", font=("Arial", 18, "bold"), anchor="center").grid(row=0, column=0, columnspan=2, pady=(0, 20))
+
+        # File selection
+        ttk.Label(main_frame, text="Select Template File (.ascii):").grid(row=1, column=0, sticky="w", pady=5)
+        file_entry = ttk.Entry(main_frame, textvariable=self.file_path, width=35)
+        file_entry.grid(row=2, column=0, sticky="ew", padx=(0, 10))
+        ttk.Button(main_frame, text="Browse", command=self.browse_file).grid(row=2, column=1, padx=(0, 0))
+        self.create_tooltip(file_entry, "Select the ASCII template file to base the new file on.")
+
+        # Damper count label (fixed to 5)
+        ttk.Label(main_frame, text=f"Number of Dampers: {self.damper_count}").grid(row=3, column=0, sticky="w", pady=(15, 5))
+
+        # Preview entries button
+        preview_entries_btn = ttk.Button(main_frame, text="Preview Entry Count", command=self.preview_entries)
+        preview_entries_btn.grid(row=5, column=0, columnspan=2, pady=10)
+        self.create_tooltip(preview_entries_btn, "View the total number of entries for 5 dampers.")
+
+        # Preview file button
+        preview_file_btn = ttk.Button(main_frame, text="Preview File Content", command=self.preview_file)
+        preview_file_btn.grid(row=6, column=0, columnspan=2, pady=10)
+        self.create_tooltip(preview_file_btn, "View a preview of the generated ASCII file content.")
+
+        # Generate button
+        ttk.Button(main_frame, text="Generate ASCII File", command=self.generate_file, style="Accent.TButton").grid(row=7, column=0, columnspan=2, pady=15)
+
+        # Status label
+        ttk.Label(main_frame, textvariable=self.status_text, font=("Arial", 10, "italic"), wraplength=500).grid(row=8, column=0, columnspan=2, pady=10)
+
+        # Configure grid weights
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=0)
+
+    def create_tooltip(self, widget, text):
+        tooltip = tk.Toplevel(self.root)
+        tooltip.wm_overrideredirect(True)
+        tooltip.wm_geometry("+1000+1000")  # Hide initially
+        label = tk.Label(tooltip, text=text, background="#ffffe0", relief="solid", borderwidth=1, font=("Arial", 9))
+        label.pack()
+
+        def show(event):
+            x = widget.winfo_rootx() + 20
+            y = widget.winfo_rooty() + widget.winfo_height()
+            tooltip.wm_geometry(f"+{x}+{y}")
+            tooltip.deiconify()
+
+        def hide(event):
+            tooltip.withdraw()
+
+        widget.bind("<Enter>", show)
+        widget.bind("<Leave>", hide)
+
+    def browse_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[("ASCII Files", "*.ascii"), ("All Files", "*.*")])
+        if file_path:
+            self.file_path.set(file_path)
+            self.status_text.set(f"Selected: {file_path}")
+
+    def preview_entries(self):
+        total_entries = 8 + (self.damper_count * 8)  # 8 for _mp_Damper + 8 per damper
+        self.status_text.set(f"Will generate {total_entries} entries for {self.damper_count} dampers.")
+
+    def generate_content(self):
+        file_path = self.file_path.get()
+
+        if not file_path:
+            self.status_text.set("Error: No template file selected.")
+            return None, "Error: Please select a template ASCII file."
+
+        try:
+            # Read the template file
+            with open(file_path, "r", encoding="utf-8") as f:
+                template_content = f.read()
+
+            # Extract header (up to the first data entry)
+            header_match = re.match(r"(.*?)^[IM]\t", template_content, re.MULTILINE | re.DOTALL)
+            if not header_match:
+                self.status_text.set("Error: Invalid ASCII file format.")
+                return None, "Error: Invalid ASCII file format. Could not find header."
+            header = header_match.group(1).rstrip()
+
+            # Define attributes for each damper, in the correct order
+            attributes = ["Mode", "Open", "Close", "Reset", "OpenFeedback", "Fault", "SetPosition", "DamperPosition"]
+
+            # Function to generate a single damper entry
+            def generate_damper_entry(action, damper_name, damper_index, active):
+                entries = []
+                bv_index_base = 240 + (damper_index * 6)  # 6 BinaryValue attributes per damper (Mode, Open, Close, Reset, OpenFeedback, Fault)
+                av_index_base = 120 + (damper_index * 2)  # 2 AnalogValue attributes per damper (SetPosition, DamperPosition)
+                for attr in attributes:
+                    if attr in ["Mode", "Open", "Close", "Reset", "OpenFeedback", "Fault"]:
+                        # BinaryValue attributes
+                        bv_offset = attributes.index(attr)  # 0 to 5 for Mode, Open, Close, Reset, OpenFeedback, Fault
+                        bv_index = bv_index_base + bv_offset
+                        entry = (f"{action}\t{damper_name}.{attr}\tDamper\tBACNET output simple\t---\t---\t{active}\t"
+                                 f"---\t---\t---\t---\t---\t---\t"
+                                 f"BACnet_Device_1.BinaryValue.{bv_index}.Present_Value\t"
+                                 f"---\t---\t---\t---\t---\t---\t---\t---\t---\t---\t"
+                                 f"---\t---\t---\t---\t---\t---\t---\t---\t---")
+                        entries.append(entry)
+                    elif attr in ["SetPosition", "DamperPosition"]:
+                        # AnalogValue attributes
+                        av_offset = attributes.index(attr) - 6  # 0 for SetPosition, 1 for DamperPosition
+                        av_index = av_index_base + av_offset
+                        if attr == "SetPosition":
+                            entry = (f"{action}\t{damper_name}.{attr}\tDamper\tBACNET output simple\t---\t---\t{active}\t"
+                                     f"---\t---\t---\t---\t---\t---\t"
+                                     f"BACnet_Device_1.AnalogValue.{av_index}.Present_Value\t"
+                                     f"---\t---\t---\t---\t---\t---\t---\t---\t---\t---\t"
+                                     f"---\t---\t---\t---\t---\t---\t---\t---\tRange\t100\t0")
+                        else:
+                            entry = (f"{action}\t{damper_name}.{attr}\tDamper\tBACNET output simple\t---\t---\t{active}\t"
+                                     f"---\t---\t---\t---\t---\t---\t"
+                                     f"BACnet_Device_1.AnalogValue.{av_index}.Present_Value\t"
+                                     f"---\t---\t---\t---\t---\t---\t---\t---\t---\t---\t"
+                                     f"---\t---\t---\t---\t---\t---\t---\t---\t---")
+                        entries.append(entry)
+                return entries
+
+            # Generate the ASCII content
+            output_lines = [header]
+            output_lines.extend(generate_damper_entry("I", "_mp_Damper", 0, "FALSE"))
+            for i in range(1, self.damper_count + 1):
+                output_lines.extend(generate_damper_entry("M", f"Damper_{i}", i-1, "TRUE"))
+
+            return output_lines, None
+
+        except Exception as e:
+            self.status_text.set(f"Error: {str(e)}")
+            return None, f"Error: Failed to generate content: {str(e)}"
+
+    def preview_file(self):
+        output_lines, error = self.generate_content()
+        if error:
+            messagebox.showerror("Error", error)
+            return
+
+        # Create a preview window
+        preview_window = tk.Toplevel(self.root)
+        preview_window.title("Preview ASCII File")
+        preview_window.geometry("700x500")
+        preview_window.configure(bg="#e6f3fa")
+
+        # Text area for preview
+        text_area = scrolledtext.ScrolledText(preview_window, wrap=tk.NONE, font=("Courier New", 10), height=20)
+        text_area.pack(padx=15, pady=15, fill="both", expand=True)
+
+        # Show up to 80 lines (header ~40 lines + _mp_Damper (8) + first 2 dampers (16))
+        preview_lines = output_lines[:80]
+        text_area.insert(tk.END, "\n".join(preview_lines))
+        text_area.config(state="disabled")  # Make read-only
+
+        # Close button
+        ttk.Button(preview_window, text="Close", command=preview_window.destroy).grid(pady=10)
+
+    def generate_file(self):
+        output_lines, error = self.generate_content()
+        if error:
+            messagebox.showerror("Error", error)
+            return
+
+        # Prompt for output file location
+        output_file = filedialog.asksaveasfilename(
+            defaultextension=".ascii",
+            filetypes=[("ASCII Files", "*.ascii"), ("All Files", "*.*")],
+            title="Save ASCII File"
+        )
+        if not output_file:
+            self.status_text.set("Error: No output file selected.")
+            return
+
+        try:
+            # Write to output file
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write("\n".join(output_lines))
+
+            messagebox.showinfo("Success", f"ASCII file '{output_file}' generated for {self.damper_count} dampers.")
+            self.status_text.set(f"Generated: {output_file} ({self.damper_count} dampers)")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate file: {str(e)}")
+            self.status_text.set(f"Error: {str(e)}")
+
+# Create and run the GUI
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DamperAsciiGenerator(root)
+    root.mainloop()

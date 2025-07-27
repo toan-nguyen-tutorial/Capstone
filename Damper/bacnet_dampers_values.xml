@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<Values>
+    <!-- Set 1 -->
+    <Value>OBJECT_BINARY_VALUE:240</Value>
+    <Value>OBJECT_BINARY_VALUE:241</Value>
+    <Value>OBJECT_BINARY_VALUE:242</Value>
+    <Value>OBJECT_BINARY_VALUE:243</Value>
+    <Value>OBJECT_BINARY_VALUE:244</Value>
+    <Value>OBJECT_BINARY_VALUE:245</Value>
+    <Value>OBJECT_ANALOG_VALUE:120</Value>
+    <Value>OBJECT_ANALOG_VALUE:121</Value>
+    <!-- Set 2 -->
+    <Value>OBJECT_BINARY_VALUE:246</Value>
+    <Value>OBJECT_BINARY_VALUE:247</Value>
+    <Value>OBJECT_BINARY_VALUE:248</Value>
+    <Value>OBJECT_BINARY_VALUE:249</Value>
+    <Value>OBJECT_BINARY_VALUE:250</Value>
+    <Value>OBJECT_BINARY_VALUE:251</Value>
+    <Value>OBJECT_ANALOG_VALUE:122</Value>
+    <Value>OBJECT_ANALOG_VALUE:123</Value>
+    <!-- Set 3 -->
+    <Value>OBJECT_BINARY_VALUE:252</Value>
+    <Value>OBJECT_BINARY_VALUE:253</Value>
+    <Value>OBJECT_BINARY_VALUE:254</Value>
+    <Value>OBJECT_BINARY_VALUE:255</Value>
+    <Value>OBJECT_BINARY_VALUE:256</Value>
+    <Value>OBJECT_BINARY_VALUE:257</Value>
+    <Value>OBJECT_ANALOG_VALUE:124</Value>
+    <Value>OBJECT_ANALOG_VALUE:125</Value>
+    <!-- Set 4 -->
+    <Value>OBJECT_BINARY_VALUE:258</Value>
+    <Value>OBJECT_BINARY_VALUE:259</Value>
+    <Value>OBJECT_BINARY_VALUE:260</Value>
+    <Value>OBJECT_BINARY_VALUE:261</Value>
+    <Value>OBJECT_BINARY_VALUE:262</Value>
+    <Value>OBJECT_BINARY_VALUE:263</Value>
+    <Value>OBJECT_ANALOG_VALUE:126</Value>
+    <Value>OBJECT_ANALOG_VALUE:127</Value>
+    <!-- Set 5 -->
+    <Value>OBJECT_BINARY_VALUE:264</Value>
+    <Value>OBJECT_BINARY_VALUE:265</Value>
+    <Value>OBJECT_BINARY_VALUE:266</Value>
+    <Value>OBJECT_BINARY_VALUE:267</Value>
+    <Value>OBJECT_BINARY_VALUE:268</Value>
+    <Value>OBJECT_BINARY_VALUE:269</Value>
+    <Value>OBJECT_ANALOG_VALUE:128</Value>
+    <Value>OBJECT_ANALOG_VALUE:129</Value>
+</Values>

@@ -1,0 +1,1362 @@
+
+    <Object Type="OBJECT_BINARY_VALUE" Instance="240">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:240</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_MODE_BV240</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="241">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:241</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_OPEN_BV241</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="242">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:242</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_CLOSE_BV242</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="243">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:243</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_RESET_BV243</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="244">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:244</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_OPENFEEDBACK_BV244</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="245">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:245</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_FAULT_BV245</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="120">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:120</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>SetPosition_DAMPER1_AV120</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="121">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER1_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:121</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DamperPosition_DAMPER1_AV121</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="246">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:246</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_MODE_BV246</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="247">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:247</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_OPEN_BV247</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="248">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:248</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_CLOSE_BV248</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="249">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:249</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_RESET_BV249</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="250">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:250</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_OPENFEEDBACK_BV250</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="251">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:251</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_FAULT_BV251</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="122">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:122</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>SetPosition_DAMPER2_AV122</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="123">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER2_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:123</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DamperPosition_DAMPER2_AV123</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="252">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:252</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_MODE_BV252</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="253">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:253</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_OPEN_BV253</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="254">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:254</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_CLOSE_BV254</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="255">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:255</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_RESET_BV255</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="256">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:256</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_OPENFEEDBACK_BV256</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="257">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:257</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_FAULT_BV257</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="124">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:124</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>SetPosition_DAMPER3_AV124</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="125">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER3_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:125</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DamperPosition_DAMPER3_AV125</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="258">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:258</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_MODE_BV258</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="259">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:259</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_OPEN_BV259</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="260">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:260</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_CLOSE_BV260</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="261">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:261</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_RESET_BV261</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="262">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:262</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_OPENFEEDBACK_BV262</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="263">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:263</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_FAULT_BV263</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="126">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:126</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>SetPosition_DAMPER4_AV126</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="127">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER4_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:127</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DamperPosition_DAMPER4_AV127</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="264">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:264</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_MODE_BV264</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="265">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:265</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_OPEN_BV265</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="266">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:266</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_CLOSE_BV266</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_UNSIGNED_INT">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="267">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:267</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_RESET_BV267</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="268">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:268</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_OPENFEEDBACK_BV268</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_BINARY_VALUE" Instance="269">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_BINARY_VALUE:269</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_FAULT_BV269</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>15</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="128">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:128</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>SetPosition_DAMPER5_AV128</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+    <Object Type="OBJECT_ANALOG_VALUE" Instance="129">
+        <Properties>
+            <Property Id="PROP_DESCRIPTION" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DAMPER5_GROUP</Value>
+            </Property>
+            <Property Id="PROP_EVENT_STATE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_IDENTIFIER" Tag="BACNET_APPLICATION_TAG_OBJECT_ID">
+                <Value>OBJECT_ANALOG_VALUE:129</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_NAME" Tag="BACNET_APPLICATION_TAG_CHARACTER_STRING">
+                <Value>DamperPosition_DAMPER5_AV129</Value>
+            </Property>
+            <Property Id="PROP_OBJECT_TYPE" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>2</Value>
+            </Property>
+            <Property Id="PROP_OUT_OF_SERVICE" Tag="BACNET_APPLICATION_TAG_BOOLEAN">
+                <Value>False</Value>
+            </Property>
+            <Property Id="PROP_PRESENT_VALUE" Tag="BACNET_APPLICATION_TAG_REAL">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_RELIABILITY" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>0</Value>
+            </Property>
+            <Property Id="PROP_STATUS_FLAGS" Tag="BACNET_APPLICATION_TAG_BIT_STRING">
+                <Value>0000</Value>
+            </Property>
+            <Property Id="PROP_UNITS" Tag="BACNET_APPLICATION_TAG_ENUMERATED">
+                <Value>62</Value>
+            </Property>
+        </Properties>
+    </Object>
+

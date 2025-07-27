@@ -1,0 +1,88 @@
+[0][mapping 5 items
+   "url" : "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCcAr2WZ6KrAwvY0B0R6yLOA_NmVAgI8sk"
+   "httpStatusCode" : 200
+   "content" : "{
+        \"candidates\": [
+            {
+            \"content\": {
+                \"parts\": [
+                {
+                    \"functionCall\": {
+                        \"name\": \"controlDevices\",
+                        \"args\": {
+                            \"devices\": [
+                            {
+                                \"name\": \"MOTOR_1\",
+                                \"state\": \"on\",
+                                \"type\": \"motor\"
+                            },
+                            {
+                                \"type\": \"motor\",
+                                \"state\": \"off\",
+                                \"name\": \"MOTOR_2\"
+                            },
+                            {
+                                \"type\": \"damper\",
+                                \"state\": \"on\",
+                                \"name\": \"DAMPER_1\"
+                            },
+                            {
+                                \"name\": \"DAMPER_5\",
+                                \"type\": \"damper\",
+                                \"state\": \"off\"
+                            },
+                            {
+                                \"name\": \"VALVE_1\",
+                                \"type\": \"valve\",
+                                \"state\": \"on\"
+                            },
+                            {
+                                \"state\": \"on\",
+                                \"name\": \"VALVE_10\",
+                                \"type\": \"valve\"
+                            }
+                            ]
+                    }
+                    }
+                }
+                ],
+                \"role\": \"model\"
+            },
+            \"finishReason\": \"STOP\",
+            \"avgLogprobs\": -4.4993543395258746e-06
+            }
+        ],
+        \"usageMetadata\": {
+            \"promptTokenCount\": 93,
+            \"candidatesTokenCount\": 58,
+            \"totalTokenCount\": 151,
+            \"promptTokensDetails\": [
+            {
+                \"modality\": \"TEXT\",
+                \"tokenCount\": 93
+            }
+            ],
+            \"candidatesTokensDetails\": [
+            {
+                \"modality\": \"TEXT\",
+                \"tokenCount\": 58
+            }
+            ]
+        },
+        \"modelVersion\": \"gemini-2.0-flash\",
+        \"responseId\": \"AP1taOedAeuwmNAPzKPqkQw\"
+        }
+"
+   "headers" : mapping 10 items
+	   "content-type" : "application/json; charset=UTF-8"
+	   "vary" : "X-Origin, Referer, Origin,Accept-Encoding"
+	   "x-content-type-options" : "nosniff"
+	   "date" : "Wed, 09 Jul 2025 05:24:17 GMT"
+	   "server" : "scaffolding on HTTPServer2"
+	   "x-frame-options" : "SAMEORIGIN"
+	   "x-xss-protection" : "0"
+	   "alt-svc" : "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+	   "server-timing" : "gfet4t7; dur=2254"
+	   "accept-ranges" : "none"
+   "httpStatusText" : ""
+]
